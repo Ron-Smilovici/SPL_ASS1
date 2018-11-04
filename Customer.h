@@ -5,6 +5,10 @@
 #include <string>
 #include "Dish.h"
 
+enum CustomerType {
+	veg, chp, spc, alc
+};
+
 class Customer {
 public:
 	Customer(std::string c_name, int c_id);
