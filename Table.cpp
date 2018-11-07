@@ -1,6 +1,6 @@
 #include "Table.h"
 
-Table::Table(int t_capacity) : capacity(t_capacity) , open(1) {}
+Table::Table(int t_capacity) : capacity(t_capacity) , open(false) {}
 
 int Table::getCapacity() const
 {

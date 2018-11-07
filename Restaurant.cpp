@@ -7,7 +7,7 @@ void split_str2vec(std::vector<string> * vec_str, std::string str);
 void parse_customers(std::vector<string> argv, std::vector<Customer *> & customers);
 
 void erase_op_code(std::vector<string> & vec);
-int extract_id(std::vector<string> & vec);
+int extract_table_id(std::vector<string> & vec);
 
 // TO BE DELETED!
 void print_vector(std::vector<Table*> vec_tables)
@@ -24,9 +24,7 @@ void print_vector_string(std::vector<string> vec_tables)
 		cout << *i << endl;
 }
 
-
 //////////////
-
 
 //Restaurant();
 Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
@@ -107,44 +105,47 @@ void Restaurant::start()
 	bool finish = false;
 	string user_input;
 	Actions op_code;
-	size_t pos = 0;
+	int table_id;
+	BaseAction * ba = NULL;
 
-	vector<Customer *> vec_customers;
-
+	// open the restaurant
 	open = true;
 	std::cout << "Restaurant is now open!" << std::endl;
-	
+
 	while (getline(cin, user_input) && !finish) {
 		vector<string> argv;
+		vector<Customer *> vec_customers;
+
 		cout << "for test: user_input= " << user_input << endl;
 
 		// Split user command to words in vector
 		split_str2vec(&argv, user_input);
 
 		print_vector_string(argv); // for test
-
 		op_code = convert_to_action(argv.at(0));
+
+		// Delete the op_code element from vector argv[0]
+		erase_op_code(argv);
+
 		switch (op_code)
 		{
 			case OPEN:
-				int table_id;
-				// Deletes the op_code element from vector argv[0]
-				erase_op_code(argv);
+				cout << "open command" << endl;
+
+				table_id = extract_table_id(argv);
 
 				// fill customer vector
-				table_id = extract_id(argv);
 				parse_customers(argv, vec_customers);
 	
-				BaseAction *ba = new OpenTable(table_id, vec_customers);
-				ba->act(*this);
-
-				cout << "open command" << endl;
+				ba = new OpenTable(table_id, vec_customers);
+				
 			break;
-			/*case ORDER:
+			case ORDER:
 				cout << "order command" << endl;
-				BaseAction *ba = new OpenTable(table_id, vec_customers);
+				table_id = extract_table_id(argv);
+				ba = new Order(table_id);
 			break;
-			case MOVE:
+			/*case MOVE:
 				cout << "move command" << endl;
 				BaseAction *ba = new OpenTable(table_id, vec_customers);
 			break;
@@ -159,7 +160,12 @@ void Restaurant::start()
 		default:
 			break;*/
 		}
-		
+
+		ba->act(*this);
+
+		// log the action in the log
+		actionsLog.push_back(ba);
+		cout << endl;
 	}
 	cout << "finishing commands" << endl;
 }
@@ -167,12 +173,12 @@ void Restaurant::start()
 
 int Restaurant::getNumOfTables() const
 {
-	return tables.size();
+	//return tables.size();
+	return number_of_tables;
 }
 
 Table* Restaurant::getTable(int ind) 
 {
-	// ADD test on ind fo the table
 	return tables.at(ind);
 }
 
@@ -188,7 +194,6 @@ DishType convert_to_dish(const std::string& str)
 	else if (str == "SPC") return SPC;
 	else if (str == "BVG") return BVG;
 	else if (str == "ALC") return ALC;
-
 }
 
 Actions convert_to_action(const std::string& str)
@@ -226,7 +231,7 @@ void erase_op_code(std::vector<string> & vec)
 	vec.erase(vec.begin() + 0); 
 }
 
-int extract_id(std::vector<string> & vec) 
+int extract_table_id(std::vector<string> & vec) 
 {
 	int id = stoi(vec.at(0), nullptr, 10);
 	vec.erase(vec.begin() + 0);
