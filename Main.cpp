@@ -14,6 +14,7 @@ int main(int argc, char** argv) {
 	string configurationFile = argv[1];
 	Restaurant rest(configurationFile);
 	rest.start();
+	system("pause");
 	if (backup != nullptr) {
 		delete backup;
 		backup = nullptr;

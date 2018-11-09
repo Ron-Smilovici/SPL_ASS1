@@ -4,7 +4,7 @@
 #include <string>
 
 enum DishType {
-	VEG, SPC, BVG, ALC
+	VEG, SPC, BVG, ALC, ERROR_DISH
 };
 
 class Dish {

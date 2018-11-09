@@ -3,10 +3,14 @@
 
 #include <vector>
 #include <string>
+#include <string>
+#include <iostream>
 #include "Dish.h"
 
+using namespace std;
+
 enum CustomerType {
-	veg, chp, spc, alc
+	veg, chp, spc, alc, err
 };
 
 class Customer {
