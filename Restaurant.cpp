@@ -9,10 +9,10 @@ void create_customers(std::vector<string> argv, std::vector<Customer *> & custom
 void erase_op_code(std::vector<string> & vec);
 int extract_table_id(std::vector<string> & vec);
 
-// TO BE DELETED!
+// T
 void print_vector(std::vector<Table*> vec_tables)
 {
-	cout << "Printing Vector" << endl;
+	cout << "Printing Vector!!" << endl;
 	for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
 		cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
 }
