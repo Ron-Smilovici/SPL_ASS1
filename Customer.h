@@ -5,13 +5,20 @@
 #include <string>
 #include <string>
 #include <iostream>
+#include <algorithm>
+#include <limits.h>
 #include "Dish.h"
 
 using namespace std;
 
 enum CustomerType {
-	veg, chp, spc, alc, err
+	veg, spc, chp, alc, err
 };
+
+#define MAX INT_MAX
+#define MIN INT_MIN
+
+typedef std::pair<int, int> CustomerOrderPair;
 
 class Customer {
 public:
@@ -41,6 +48,7 @@ public:
 	std::vector<int> order(const std::vector<Dish> &menu);
 	std::string toString() const;
 private:
+	bool ordered;
 };
 
 
@@ -50,6 +58,7 @@ public:
 	std::vector<int> order(const std::vector<Dish> &menu);
 	std::string toString() const;
 private:
+	bool firstOrder;
 };
 
 
@@ -59,6 +68,7 @@ public:
 	std::vector<int> order(const std::vector<Dish> &menu);
 	std::string toString() const;
 private:
+	std::vector<Dish> OrderedAlcDishes;
 };
 
 
