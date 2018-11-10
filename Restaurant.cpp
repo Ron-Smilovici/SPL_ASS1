@@ -4,7 +4,7 @@
 DishType convert_to_dish(const std::string& str);
 Actions convert_to_action(const std::string& str);
 void split_str2vec(std::vector<string> * vec_str, std::string str);
-void create_customers(std::vector<string> argv, std::vector<Customer *> & customers, Restaurant & res);
+void create_customers(std::vector<string> argv, std::vector<Customer *> & customers);
 
 void erase_op_code(std::vector<string> & vec);
 int extract_table_id(std::vector<string> & vec);
@@ -77,9 +77,9 @@ void Restaurant::parsingTables(string tables_capacity)
 	{
 		Table * table = new Table(stoul(capacity));
 		// create a new table with certain capacity
-		cout << "create a NEW table with capacity " << stoul(capacity) << ", table is_open? " << table->isOpen() << endl;
+		cout << "create a NEW table with capacity " << stoul(capacity) << "table is_open? " << table->isOpen() << endl;
 
-		// insert table to the vector of tables
+		// insert table to the vector of tables. push_back adds a new value to the end of the array(vector).
 		tables.push_back(table);
 	}
 }
@@ -93,12 +93,13 @@ void Restaurant::parsingDishes(string dish_information, int dish_id)
 	getline(ss, type, DELIMITER_COMMA);
 	getline(ss, price, DELIMITER_COMMA);
 
-	// Create a Dish
+	// Create a Dish on the STK. coping it to the vector of Dishes.
 	Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
 
 	// Add the Dish to the menu vector
 	menu.push_back(dish);
-	//cout << "name = " << name << " type= " << type << " price = " << price << endl;
+//	cout << "name = " << name << " type= " << type << " price = " << price << endl;
+//	cout << "x" << menu.at(0).getName() << endl;
 }
 
 void Restaurant::start()
@@ -124,6 +125,7 @@ void Restaurant::start()
 		split_str2vec(&argv, user_input);
 
 		//print_vector_string(argv); // for test
+
 		op_code = convert_to_action(argv.at(0));
 
 		// Delete the op_code element from vector argv[0]
@@ -138,7 +140,6 @@ void Restaurant::start()
 
 				/* If the table doesn't exist or is already open, this action should result in an error */
 				if (!is_table_id_valid(table_id) || is_table_open(table_id)) {
-		
 					cout << "Table does not exist or is already open" << endl;
 					cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
 					continue;
@@ -152,7 +153,7 @@ void Restaurant::start()
 				}
 
 				// fill customer vector
-				create_customers(argv, vec_customers, *this);
+				create_customers(argv, vec_customers);
 				ba = new OpenTable(table_id, vec_customers);
 				
 			break;
@@ -225,108 +226,105 @@ Table* Restaurant::getTable(int ind)
 	return tables.at(ind);
 }
 
-void Restaurant::setOpen(bool value)
-{
-	this->open = value;
-}
+
+void Restaurant::setOpen(bool value) {
+		this->open = value;
+	}
 
 // Return a reference to the history of actions
 //const std::vector<BaseAction*>& Restaurant::getActionsLog() const{}
 
-std::vector<Dish>& Restaurant::getMenu() 
-{
-	return this->menu;
-}
+	std::vector<Dish> &Restaurant::getMenu() {
+		return this->menu;
+	}
 
 
 /* Added methods */
-DishType convert_to_dish(const std::string& str)
-{
-	if (str == "VEG") return VEG;
-	else if (str == "SPC") return SPC;
-	else if (str == "BVG") return BVG;
-	else if (str == "ALC") return ALC;
-	else return ERROR_DISH;
-}
-
-Actions convert_to_action(const std::string& str)
-{
-	//OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
-	if (str == "open") return OPEN;
-	else if (str == "order") return ORDER;
-	else if (str == "move") return MOVE;
-	else if (str == "close") return CLOSE;
-	else if (str == "closeall") return CLOSEALL;
-	else return ERROR_ACTION;
-
-}
-
-CustomerType convert_to_customer(const std::string& str) 
-{
-	if (str == "veg") return veg;
-	else if (str == "chp") return chp;
-	else if (str == "spc") return spc;
-	else if (str == "alc") return alc;
-	else return err;
-}
-
-void split_str2vec (std::vector<string> * vec_str, std::string str) 
-{
-	std::string token;
-	std::istringstream ss(str);
-	while (std::getline(ss, token, ' ')) {
-		vec_str->push_back(token);
+	DishType convert_to_dish(const std::string &str) {
+		if (str == "VEG") return VEG;
+		else if (str == "SPC") return SPC;
+		else if (str == "BVG") return BVG;
+		else if (str == "ALC") return ALC;
+		else return ERROR_DISH;
 	}
-}
+
+	Actions convert_to_action(const std::string &str) {
+		//OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
+		if (str == "open") return OPEN;
+		else if (str == "order") return ORDER;
+		else if (str == "move") return MOVE;
+		else if (str == "close") return CLOSE;
+		else if (str == "closeall") return CLOSEALL;
+
+		else if (str == "menu") return MENU;
+
+		else return ERROR_ACTION;
+	}
+
+	CustomerType convert_to_customer(const std::string &str) {
+		if (str == "veg") return veg;
+		else if (str == "chp") return chp;
+		else if (str == "spc") return spc;
+		else if (str == "alc") return alc;
+		else return err;
+	}
+
+	void split_str2vec(std::vector<string> *vec_str, std::string str) {
+		std::string token;
+		std::istringstream ss(str);
+		while (std::getline(ss, token, ' ')) {
+			vec_str->push_back(token);
+		}
+	}
 
 
 /* Open Action */
-void erase_op_code(std::vector<string> & vec) 
-{
-	vec.erase(vec.begin() + 0); 
-}
-
-int extract_table_id(std::vector<string> & vec) 
-{
-	int id = stoi(vec.at(0), nullptr, 10);
-	vec.erase(vec.begin() + 0);
-	return id;
-}
-
-void create_customers(std::vector<string> argv, std::vector<Customer *> & vec_customers, Restaurant & res)
-{
-	Customer * customer;
-	int customer_id = 0;
-	std::string customer_name, customer_str_type;
-
-	for (std::vector<string>::const_iterator i = argv.begin(); i != argv.end(); ++i) {
-		stringstream ss(*i);
-
-		getline(ss, customer_name, ',');
-		getline(ss, customer_str_type, ',');
-		CustomerType customer_type = convert_to_customer(customer_str_type);
-
-		cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << endl;
-		switch (customer_type)
-		{
-		case veg:
-			customer = new VegetarianCustomer(customer_name, customer_id);
-			break;
-		case chp:
-			customer = new CheapCustomer(customer_name, customer_id);
-			break;
-		case spc:
-			customer = new SpicyCustomer(customer_name, customer_id);
-			break;
-		case alc:
-			customer = new AlchoholicCustomer(customer_name, customer_id);
-
-			break;
-		}
-		vec_customers.push_back(customer);
-		customer_id++;
+	void erase_op_code(std::vector<string> &vec) {
+		vec.erase(vec.begin() + 0);
 	}
-}
+
+	int extract_table_id(std::vector<string> &vec) {
+		int id = stoi(vec.at(0), nullptr, 10);
+		vec.erase(vec.begin() + 0);
+		return id;
+	}
+
+	void create_customers(std::vector<string> argv, std::vector<Customer *> &vec_customers)
+	{
+		Customer *customer;
+		int customer_id = 0;
+		std::string customer_name, customer_str_type;
+
+		for (std::vector<string>::const_iterator i = argv.begin(); i != argv.end(); ++i) {
+			stringstream ss(*i);
+
+			getline(ss, customer_name, ',');
+			getline(ss, customer_str_type, ',');
+			CustomerType customer_type = convert_to_customer(customer_str_type);
+
+			cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << endl;
+			switch (customer_type)
+			{
+				case veg:
+					customer = new VegetarianCustomer(customer_name, customer_id);
+					break;
+				case chp:
+					customer = new CheapCustomer(customer_name, customer_id);
+					break;
+				case spc:
+					customer = new SpicyCustomer(customer_name, customer_id);
+					break;
+				case alc:
+					customer = new AlchoholicCustomer(customer_name, customer_id);
+					break;
+			}
+			vec_customers.push_back(customer);
+			customer_id++;
+		}
+	}
 
 
 /* Other Actions */
+//case MENU:
+//   PrintMenu printMenu;
+//  printMenu.act(*this);
