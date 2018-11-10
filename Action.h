@@ -5,7 +5,13 @@
 #include <iostream>
 #include "Customer.h"
 
-
+// rule of 5
+/*
+	copy contructor
+	move constructor
+	Move assignemnt operator
+	Copy assignement opertaor
+*/
 										
 
 enum ActionStatus {
