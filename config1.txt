@@ -3,8 +3,14 @@
 #tables description
 6,4,4,14,10,10
 #Menu
-Beer,ALC,50
+Beer,ALC,150
 Salad,VEG,40
 Water,BVG,10
 Wine,ALC,60
+Vodka,ALC,100
+Whisky,ALC,10
+Chili,SPC,150
+Hot Chile,SPC,110
+Soda,BVG,5
+TOFO,VEG,100
 Chili Con Carne,SPC,200

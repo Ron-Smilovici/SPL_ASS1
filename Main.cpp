@@ -12,7 +12,6 @@ int main(int argc, char** argv) {
 	}
 
 	string configurationFile = argv[1];
-
 	Restaurant rest(configurationFile);
 	rest.start();
 	system("pause");
