@@ -1,9 +1,9 @@
 #include "Customer.h"
 
 // Customer
-Customer::Customer(std::string c_name, int c_id) : name(c_name), id(c_id) 
+Customer::Customer(std::string c_name, int c_id) : name(c_name), id(c_id)
 {
-	
+
 }
 
 std::string Customer::getName() const { return name; }
@@ -13,14 +13,14 @@ int Customer::getId() const { return id; }
 CheapCustomer::CheapCustomer(std::string name, int id) : Customer(name, id) {}
 
 //returns a vector of dishes IDs that were ordered by the customers
-std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu) 
-{ 
+std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu)
+{
 	int cheapest_dish_id = 0;
 	int cheapest_dish_price = menu.at(0).getPrice();
 	vector<Dish> temp_vec_dish;
 	vector<int> temp;
 	// find the cheapest dish in the menu
-	for (std::vector<Dish>::const_iterator i = menu.begin() + 1; i != menu.end(); ++i) 
+	for (std::vector<Dish>::const_iterator i = menu.begin() + 1; i != menu.end(); ++i)
 	{
 		if ((*i).getPrice() < cheapest_dish_price)
 		{
@@ -30,7 +30,7 @@ std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu)
 	}
 
 	cout << "cheapest dish is " << menu.at(cheapest_dish_id).getName() << " price " <<
-		(menu.at(cheapest_dish_id)).getPrice() << " id " << cheapest_dish_id << endl;
+		 (menu.at(cheapest_dish_id)).getPrice() << " id " << cheapest_dish_id << endl;
 
 	// remove the dish from menu
 	cout << "remove the dish from menu" << endl;
