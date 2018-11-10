@@ -8,7 +8,7 @@ BaseAction::BaseAction()
 
 }
 
-ActionStatus BaseAction::getStatus() const
+ActionStatus BaseAction::getStatus() const 
 {
 	return this->status;
 }
@@ -29,7 +29,7 @@ void OpenTable::act(Restaurant &restaurant)
 	Table * curr_table = NULL;
 
 	curr_table = restaurant.getTable(tableId);
-	// open the table
+	// open the table 
 	curr_table->openTable();
 	system("pause");
 	// add customers to table
@@ -40,14 +40,14 @@ void OpenTable::act(Restaurant &restaurant)
 	}
 }
 
-std::string OpenTable::toString() const
+std::string OpenTable::toString() const 
 {
 	return "";
 }
 
 Order::Order(int id) : BaseAction(), tableId(id) {}
 
-void Order::act(Restaurant &restaurant)
+void Order::act(Restaurant &restaurant) 
 {
 	Table * curr_table;
 
@@ -82,12 +82,12 @@ void Close::act(Restaurant &restaurant)
 	curr_table->closeTable();
 }
 
-std::string Close::toString() const
+std::string Close::toString() const 
 {
 	std::stringstream sstr;
 	sstr << "Table " << tableId << " was closed. Bill " << this->bill << endl;
 	//sstr << "Address: houseNumber: " << houseNumber << " streetName: " << streetName << " zipCode: " << zipCode;
-	return sstr.str();
+	return sstr.str(); 
 }
 
 //CloseAll action
@@ -120,18 +120,19 @@ PrintMenu::PrintMenu() : BaseAction()
 
 void PrintMenu::act(Restaurant &restaurant)
 {
-	vector<Dish> vDish;
-	vDish = restaurant.getMenu();
-	std::cout << "This is act by PrintMenu dervied class " << std::endl;
-	for(int i = 0; i < vDish.size(); i++)
-	{
-		cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
-	}
-	//system("pause");
+    vector<Dish> vDish;
+    vDish = restaurant.getMenu();
+    std::cout << "This is act by PrintMenu dervied class " << std::endl;
+    for(int i = 0; i < vDish.size(); i++)
+    {
+        cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
+    }
+    //system("pause");
 }
 
 std::string PrintMenu::toString() const
 {
 
-	return "test";
+    return "test";
 }
+
