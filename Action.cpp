@@ -1,11 +1,21 @@
 #include "Action.h"
-#include "Restaurant.h"
 #include <string>
 #include <iostream>
 
-BaseAction::BaseAction() 
+#include "Restaurant.h" // Added becuase the use of all restaurant methods... check with someone else.
+BaseAction::BaseAction()
 {
 
+}
+
+ActionStatus BaseAction::getStatus() const 
+{
+	return this->status;
+}
+
+ostream& BaseAction::operator<<(ostream& out)
+{
+	return out << this->toString();
 }
 
 // make sure regarding the copy constuctor for the vector.
@@ -14,19 +24,92 @@ OpenTable::OpenTable(int id, std::vector<Customer *> &customersList) : BaseActio
 
 }
 
-void OpenTable::act(Restaurant &restaurant) 
+void OpenTable::act(Restaurant &restaurant)
 {
-	std::cout << "This is act by OpenTable dervied class " << std::endl;
-	//system("pause");
+	Table * curr_table = NULL;
+
+	curr_table = restaurant.getTable(tableId);
+	// open the table 
+	curr_table->openTable();
+	system("pause");
+	// add customers to table
+	for (std::vector<Customer*>::const_iterator i = customers.begin(); i != customers.end(); ++i)
+	{
+		cout << "customer name " << (*i)->getName() << " will be added to table " << tableId << endl;
+		curr_table->addCustomer(*i);
+	}
 }
 
 std::string OpenTable::toString() const 
 {
-
-	return "test";
+	return "";
 }
 
+Order::Order(int id) : BaseAction(), tableId(id) {}
 
+void Order::act(Restaurant &restaurant) 
+{
+	Table * curr_table;
+
+	if (!(curr_table = restaurant.getTable(tableId)))
+	{
+		cout << "Need to add error could not find table" << endl;
+	}
+
+	curr_table->order(restaurant.getMenu());
+}
+std::string Order::toString() const { return "test"; }
+
+
+
+// Close action
+Close::Close(int id) : BaseAction(), tableId(id) {}
+
+void Close::act(Restaurant &restaurant)
+{
+	Table * curr_table = NULL;
+
+	curr_table = restaurant.getTable(tableId);
+	if (!curr_table)
+	{
+		cout << "Close::act curr_table is NULL" << endl;
+		return;
+	}
+
+	this->bill = curr_table->getBill();
+
+	// close the table
+	curr_table->closeTable();
+}
+
+std::string Close::toString() const 
+{
+	std::stringstream sstr;
+	sstr << "Table " << tableId << " was closed. Bill " << this->bill << endl;
+	//sstr << "Address: houseNumber: " << houseNumber << " streetName: " << streetName << " zipCode: " << zipCode;
+	return sstr.str(); 
+}
+
+//CloseAll action
+
+CloseAll::CloseAll() : BaseAction() {}
+void CloseAll::act(Restaurant &restaurant)
+{
+	int number_of_tables = restaurant.getNumOfTables();
+
+	for (int i = 0; i < number_of_tables; i++)
+	{
+		if (restaurant.getTable(i)->isOpen()) {
+			Close close_table(i);
+			close_table.act(restaurant);
+			cout << close_table.toString();
+		}
+	}
+
+	// close the restaurant
+	restaurant.setOpen(false);
+}
+std::string CloseAll::toString() const { return ""; }
 
 
 PrintMenu::PrintMenu() : BaseAction()
@@ -52,3 +135,4 @@ std::string PrintMenu::toString() const
 
     return "test";
 }
+

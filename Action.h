@@ -5,12 +5,15 @@
 #include <iostream>
 #include "Customer.h"
 
+
+										
+
 enum ActionStatus {
 	PENDING, COMPLETED, ERROR
 };
 
 enum Actions {
-	OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
+	OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE, ERROR_ACTION
 };
 
 //Forward declaration
@@ -22,6 +25,7 @@ public:
 	ActionStatus getStatus() const;
 	virtual void act(Restaurant& restaurant) = 0;
 	virtual std::string toString() const = 0;
+	ostream& operator<<(ostream& out);
 protected:
 	void complete();
 	void error(std::string errorMsg);
@@ -72,6 +76,7 @@ public:
 	std::string toString() const;
 private:
 	const int tableId;
+	int bill;
 };
 
 
