@@ -200,6 +200,13 @@ void Restaurant::start()
 				ba = new CloseAll();
 				break;
 
+		    case MENU:
+		        cout << "menu commend" << endl;
+		        BaseAction *ba = new PrintMenu();
+		        PrintMenu printMenu;
+		        printMenu.act(*this);
+                break;
+
 		/*default:
 			break;*/
 		}
@@ -325,6 +332,3 @@ void Restaurant::setOpen(bool value) {
 
 
 /* Other Actions */
-//case MENU:
-//   PrintMenu printMenu;
-//  printMenu.act(*this);
