@@ -76,7 +76,7 @@ void Restaurant::parsingTables(string tables_capacity)
 		// create a new table with certain capacity
 		Table * table = new Table(stoul(capacity));
 
-		// insert table to the vector of tables
+		// insert table to the vector of tables. push_back adds a new value to the end of the array(vector).
 		tables.push_back(table);
 	}
 }
@@ -91,7 +91,7 @@ void Restaurant::parsingDishes(string dish_information)
 	getline(ss, type, DELIMITER_COMMA);
 	getline(ss, price, DELIMITER_COMMA);
 
-	// Create a Dish
+	// Create a Dish on the STK. coping it to the vector of Dishes.
 	Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
 
 	// Advance Dish id
@@ -99,7 +99,8 @@ void Restaurant::parsingDishes(string dish_information)
 
 	// Add the Dish to the menu vector
 	menu.push_back(dish);
-	//cout << "name = " << name << " type= " << type << " price = " << price << endl;
+//	cout << "name = " << name << " type= " << type << " price = " << price << endl;
+//	cout << "x" << menu.at(0).getName() << endl;
 }
 
 void Restaurant::start()
@@ -113,33 +114,42 @@ void Restaurant::start()
 
 	open = true;
 	std::cout << "Restaurant is now open!" << std::endl;
-	
+
+
 	while (getline(cin, user_input) && !finish) {
 		vector<string> argv;
-		cout << "for test: user_input= " << user_input << endl;
+		//cout << "for test: user_input= " << user_input << endl;
 
 		// Split user command to words in vector
 		split_str2vec(&argv, user_input);
 
-		print_vector_string(argv); // for test
+		//print_vector_string(argv); // for test
 
 		op_code = convert_to_action(argv.at(0));
 		switch (op_code)
 		{
-			case OPEN:
-				int table_id;
-				// Deletes the op_code element from vector argv[0]
-				erase_op_code(argv);
+			case OPEN:{
+                int table_id;
+                // Deletes the op_code element from vector argv[0]
+                erase_op_code(argv);
 
-				// fill customer vector
-				table_id = extract_id(argv);
-				parse_customers(argv, vec_customers);
-	
-				BaseAction *ba = new OpenTable(table_id, vec_customers);
-				ba->act(*this);
+                // fill customer vector
+                table_id = extract_id(argv);
+                parse_customers(argv, vec_customers);
 
-				cout << "open command" << endl;
-			break;
+                BaseAction *ba = new OpenTable(table_id, vec_customers);
+                ba->act(*this);
+
+                cout << "open command" << endl;
+                break;
+			}
+
+            case MENU:
+                PrintMenu printMenu;
+                printMenu.act(*this);
+
+                break;
+
 			/*case ORDER:
 				cout << "order command" << endl;
 				BaseAction *ba = new OpenTable(table_id, vec_customers);
@@ -176,6 +186,11 @@ Table* Restaurant::getTable(int ind)
 	return tables.at(ind);
 }
 
+std::vector<Dish>& Restaurant::getMenu()
+{
+    return menu;
+}
+
 // Return a reference to the history of actions
 //const std::vector<BaseAction*>& Restaurant::getActionsLog() const{}
 //std::vector<Dish>& Restaurant::getMenu() {}
@@ -199,6 +214,7 @@ Actions convert_to_action(const std::string& str)
 	else if (str == "move") return MOVE;
 	else if (str == "close") return CLOSE;
 	else if (str == "closeall") return CLOSEALL;
+	else if (str == "menu") return MENU;
 
 }
 
