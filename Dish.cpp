@@ -1,22 +1,20 @@
-#include <iostream>
-#include <string>
 #include "Dish.h"
 
-//parameter constructor.
 Dish::Dish(int d_id, std::string d_name, int d_price, DishType d_type) : id(d_id), name(d_name), price(d_price), type(d_type) {}
 
-// copy constructor.
-Dish::Dish(const Dish & rhs_lvalue): id(rhs_lvalue.id), name(rhs_lvalue.name), price(rhs_lvalue.price), type(rhs_lvalue.type) {}
+// copy constructor
+Dish::Dish(const Dish & dish) : id(dish.id), name(dish.name), price(dish.price), type(dish.type) {}
 
-// move constructor.
-Dish::Dish(Dish && rhs_rvalue) : id(rhs_rvalue.id), name(rhs_rvalue.name), price(rhs_rvalue.price), type(rhs_rvalue.type) {}
+// move constructor
+Dish::Dish(Dish && dish) : id(dish.id), name(dish.name), price(dish.price), type(dish.type) {}
 
-//copy assignment operator.
-Dish& Dish::operator=(const Dish& rhs){
-    return *this;
+// copy assignement operator
+Dish & Dish::operator=(const Dish & dish) {
+	return *this;
 }
-//move assignment operator.
-Dish& Dish::operator=( Dish&& rhs) {
+
+// move assignement operator
+Dish & Dish::operator=(Dish && dish) {
 	return *this;
 }
 
@@ -38,4 +36,18 @@ int Dish::getPrice() const
 DishType Dish::getType() const
 {
 	return this->type;
+}
+
+bool Dish::operator==(const Dish& dish) const 
+{
+	return ((this->getId() == dish.getId()) &&
+		(this->getName() == dish.getName()) &&
+		(this->getPrice() == dish.getPrice()) &&
+		(this->getType() == dish.getType()));
+}
+
+bool Dish::operator< (Dish& dish) const
+{
+	cout << "Test this->price= " << this->price << " < " << dish.getPrice() << " =dish.getPrice()" << endl;
+	return (this->price < dish.getPrice());
 }
