@@ -21,6 +21,8 @@ void Table::removeCustomer(int id)
 
 Customer* Table::getCustomer(int id)
 {
+	if ((id < 0) || (id >= this->getCapacity()))
+		return NULL;
 	return this->customersList.at(id);
 }
 
@@ -41,7 +43,8 @@ void Table::order(const std::vector<Dish> &menu)
 	vec_customers = this->getCustomers();
 	for (std::vector<Customer*>::const_iterator i = vec_customers.begin(); i != vec_customers.end(); ++i)
 	{
-		// Execute order for each customer i 
+		// Execute order for each customer i in the table and return a vector
+		// of dishes id that the csutomer ordered
 		std::vector<int> ordered_dishes_id = (*i)->order(menu);
 
 		// Create pairs for all the dishes customer i ordered
@@ -50,6 +53,7 @@ void Table::order(const std::vector<Dish> &menu)
 			pair <int, Dish> ordered_dish(*j, menu.at(*j));
 			// push the pair to vector orderList
 			(this->getOrders()).push_back(ordered_dish);
+			cout << (*i)->getName() << " ordered " << menu.at(*j).getName() << endl;
 		}
 	}
 }
