@@ -1,6 +1,68 @@
 #include "Table.h"
 
 Table::Table(int t_capacity) : capacity(t_capacity) , open(false) {}
+//copy constuctor
+Table::Table(const Table &table)
+{
+    open = table.open;
+    capacity = table.capacity;
+
+	for (int i = 0; i < table.orderList.size(); ++i) {
+		orderList.push_back(table.orderList.at(i));
+	}
+
+	for(int i = 0; i < table.customersList.size(); ++i){
+		Customer* temp = table.customersList.at(i);
+		Customer* cloned = temp->clone();
+		customersList.push_back(cloned);
+	}
+}
+//copy assignment operator
+Table& Table::operator=(const Table &table) {
+	open = table.open;
+	capacity = table.capacity;
+
+	for (int i = 0; i < table.orderList.size(); ++i) {
+		orderList.push_back(table.orderList.at(i));
+	}
+
+	for(int i = 0; i < table.customersList.size(); ++i){
+		Customer* temp = table.customersList.at(i);
+		Customer* cloned = temp->clone();
+		customersList.push_back(cloned);
+	}
+}
+
+//move constructor
+Table::Table(Table &&table)
+{
+	open = table.open;
+	capacity = table.capacity;
+
+	for (int i = 0; i < table.orderList.size(); ++i) {
+		orderList.push_back(table.orderList.at(i));
+	}
+
+	for(int i = 0; i < table.customersList.size(); ++i){
+		customersList.push_back(table.customersList.at(i));
+		table.customersList.at(i) = nullptr;
+	}
+}
+
+//move assignment operator
+Table& Table::operator=(Table &&table) {
+	open = table.open;
+	capacity = table.capacity;
+
+	for (int i = 0; i < table.orderList.size(); ++i) {
+		orderList.push_back(table.orderList.at(i));
+	}
+
+	for(int i = 0; i < table.customersList.size(); ++i){
+		customersList.push_back(table.customersList.at(i));
+		table.customersList.at(i) = nullptr;
+	}
+}
 
 int Table::getCapacity() const
 {

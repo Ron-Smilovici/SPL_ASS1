@@ -3,6 +3,11 @@
 #include <iostream>
 
 #include "Restaurant.h" // Added becuase the use of all restaurant methods... check with someone else.
+
+/* Forward declaration */
+extern Restaurant* backup;
+std::string convert_to_dishtype(int num);
+
 BaseAction::BaseAction()
 {
 
@@ -112,26 +117,49 @@ void CloseAll::act(Restaurant &restaurant)
 std::string CloseAll::toString() const { return ""; }
 
 
-PrintMenu::PrintMenu() : BaseAction()
-{
+//PrintMenu action
 
-}
-
-
+PrintMenu::PrintMenu() : BaseAction(){}
 void PrintMenu::act(Restaurant &restaurant)
 {
 	vector<Dish> vDish;
 	vDish = restaurant.getMenu();
 	std::cout << "This is act by PrintMenu dervied class " << std::endl;
-	for(int i = 0; i < vDish.size(); i++)
+	for(int i = 0; i < vDish.size(); i++)  // printing.
 	{
-		cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
+		cout << vDish.at(i).getName() << " " << convert_to_dishtype(vDish.at(i).getType())
+		<< " " << vDish.at(i).getPrice() << "NIS" << endl;
 	}
 	//system("pause");
 }
 
 std::string PrintMenu::toString() const
 {
-
 	return "test";
+}
+
+
+//BackupRestaurant action
+
+BackupRestaurant::BackupRestaurant() : BaseAction(){}
+void BackupRestaurant::act(Restaurant &restaurant)
+{
+    std::cout << "This is act by BackupRestaurant dervied class " << std::endl;
+    if(!backup){
+        cout << "backup is empty." << endl;
+        backup = new Restaurant(restaurant);
+    }
+
+    //backup = Restaurant
+}
+
+std::string BackupRestaurant::toString() const { return "test"; }
+
+/* Added methods */
+std::string convert_to_dishtype(int num) {
+    if (num == 0) return "VEG";
+    else if (num == 1) return "SPC";
+    else if (num == 2) return "BVG";
+    else if (num == 3) return "ALC";
+    else return "ERROR_DISH";
 }

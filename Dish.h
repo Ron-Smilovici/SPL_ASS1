@@ -15,13 +15,13 @@ public:
 	Dish(int d_id, std::string d_name, int d_price, DishType d_type);
 	Dish(const Dish& dish); // copy constructor
 	Dish(Dish && dish); // move constructor
+    Dish& operator=(const Dish& dish); // copy assignment operator
+    Dish& operator=(Dish && dish); // move assignment operator
 
 	int getId() const;
 	std::string getName() const;
 	int getPrice() const;
 	DishType getType() const;
-	Dish& operator=(const Dish&); // copy assignent operator
-	Dish& operator=(Dish && dish); // move assignent operator
 	bool operator==(const Dish& dish) const;
 	bool operator< (Dish& dish) const;
 

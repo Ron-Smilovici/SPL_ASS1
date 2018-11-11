@@ -29,6 +29,7 @@ class Restaurant {
 public:
 	Restaurant();
 	Restaurant(const std::string &configFilePath);
+	Restaurant(const Restaurant &rhs); //copy constructor
 	void start();
 	int getNumOfTables() const; //
 	void setOpen(bool value);

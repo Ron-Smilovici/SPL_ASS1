@@ -1,5 +1,7 @@
 #include "Restaurant.h"
 
+
+
 /* Forward declaration */
 DishType convert_to_dish(const std::string& str);
 Actions convert_to_action(const std::string& str);
@@ -25,8 +27,9 @@ void print_vector_string(std::vector<string> vec_tables)
 }
 
 //////////////
-
-//Restaurant();
+//default constructor
+Restaurant::Restaurant(){}
+//parameterized constructor
 Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 {
     bool r_num_of_tables_complete = false;
@@ -68,6 +71,14 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
     }
 }
 
+//copy constructor
+Restaurant::Restaurant(const Restaurant &rhs)
+{
+    open = rhs.open;
+    for(int i = 0; i < rhs.tables.size(); i++){
+
+    }
+}
 void Restaurant::parsingTables(string tables_capacity)
 {
     string capacity;
@@ -202,11 +213,12 @@ void Restaurant::start()
 
             case MENU:
                 cout << "menu commend" << endl;
-                BaseAction *ba = new PrintMenu();
-                PrintMenu printMenu;
-                printMenu.act(*this);
+                ba = new PrintMenu();
                 break;
 
+            case BACKUP:
+                cout << "backup commend" << endl;
+                ba = new BackupRestaurant();
                 /*default:
                     break;*/
         }
@@ -262,7 +274,7 @@ Actions convert_to_action(const std::string &str) {
     else if (str == "move") return MOVE;
     else if (str == "close") return CLOSE;
     else if (str == "closeall") return CLOSEALL;
-
+    else if (str == "backup") return BACKUP;
     else if (str == "menu") return MENU;
 
     else return ERROR_ACTION;
