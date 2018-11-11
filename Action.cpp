@@ -1,9 +1,10 @@
 #include "Action.h"
+#include "Restaurant.h" // Added becuase the use of all restaurant methods... check with someone else.
+#include "Restaurant.h"
 #include <string>
 #include <iostream>
 
-#include "Restaurant.h" // Added becuase the use of all restaurant methods... check with someone else.
-BaseAction::BaseAction()
+BaseAction::BaseAction() 
 {
 
 }
@@ -24,6 +25,25 @@ OpenTable::OpenTable(int id, std::vector<Customer *> &customersList) : BaseActio
 
 }
 
+PrintMenu::PrintMenu() : BaseAction()
+{
+}
+void PrintMenu::act(Restaurant &restaurant)
+{
+	vector<Dish> vDish;
+	vDish = restaurant.getMenu();
+	std::cout << "This is act by PrintMenu dervied class " << std::endl;
+	for (int i = 0; i < vDish.size(); i++)
+	{
+		cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
+	}
+	//system("pause");
+}
+std::string PrintMenu::toString() const
+{
+	return "test";
+}
+
 void OpenTable::act(Restaurant &restaurant)
 {
 	Table * curr_table = NULL;
@@ -31,7 +51,6 @@ void OpenTable::act(Restaurant &restaurant)
 	curr_table = restaurant.getTable(tableId);
 	// open the table 
 	curr_table->openTable();
-	system("pause");
 	// add customers to table
 	for (std::vector<Customer*>::const_iterator i = customers.begin(); i != customers.end(); ++i)
 	{
@@ -110,29 +129,3 @@ void CloseAll::act(Restaurant &restaurant)
 	restaurant.setOpen(false);
 }
 std::string CloseAll::toString() const { return ""; }
-
-
-PrintMenu::PrintMenu() : BaseAction()
-{
-
-}
-
-
-void PrintMenu::act(Restaurant &restaurant)
-{
-    vector<Dish> vDish;
-    vDish = restaurant.getMenu();
-    std::cout << "This is act by PrintMenu dervied class " << std::endl;
-    for(int i = 0; i < vDish.size(); i++)
-    {
-        cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
-    }
-    //system("pause");
-}
-
-std::string PrintMenu::toString() const
-{
-
-    return "test";
-}
-
