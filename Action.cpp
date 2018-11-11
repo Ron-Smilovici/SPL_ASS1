@@ -4,6 +4,10 @@
 #include <string>
 #include <iostream>
 
+/* Forward declaration */
+extern Restaurant* backup;
+std::string convert_to_dishtype(int num);
+
 BaseAction::BaseAction() 
 {
 
@@ -23,25 +27,6 @@ ostream& BaseAction::operator<<(ostream& out)
 OpenTable::OpenTable(int id, std::vector<Customer *> &customersList) : BaseAction(), tableId(id) , customers(customersList)
 {
 
-}
-
-PrintMenu::PrintMenu() : BaseAction()
-{
-}
-void PrintMenu::act(Restaurant &restaurant)
-{
-	vector<Dish> vDish;
-	vDish = restaurant.getMenu();
-	std::cout << "This is act by PrintMenu dervied class " << std::endl;
-	for (int i = 0; i < vDish.size(); i++)
-	{
-		cout << vDish.at(i).getName() << " " << vDish.at(i).getType() << " " << vDish.at(i).getPrice() << "NIS" << endl;
-	}
-	//system("pause");
-}
-std::string PrintMenu::toString() const
-{
-	return "test";
 }
 
 void OpenTable::act(Restaurant &restaurant)
@@ -129,3 +114,50 @@ void CloseAll::act(Restaurant &restaurant)
 	restaurant.setOpen(false);
 }
 std::string CloseAll::toString() const { return ""; }
+
+// PrintMenu action
+
+PrintMenu::PrintMenu() : BaseAction() {}
+void PrintMenu::act(Restaurant &restaurant)
+{
+	vector<Dish> vDish;
+	vDish = restaurant.getMenu();
+	std::cout << "This is act by PrintMenu dervied class " << std::endl;
+	for (int i = 0; i < vDish.size(); i++)  // printing.
+	{
+		cout << vDish.at(i).getName() << " " << convert_to_dishtype(vDish.at(i).getType())
+			<< " " << vDish.at(i).getPrice() << "NIS" << endl;
+	}
+	//system("pause");
+}
+
+std::string PrintMenu::toString() const
+{
+	return "test";
+}
+
+
+//BackupRestaurant action
+
+BackupRestaurant::BackupRestaurant() : BaseAction() {}
+void BackupRestaurant::act(Restaurant &restaurant)
+{
+	std::cout << "This is act by BackupRestaurant dervied class " << std::endl;
+	if (!backup) {
+		cout << "backup is empty." << endl;
+		backup = new Restaurant(restaurant);
+	}
+
+	//backup = Restaurant
+}
+
+std::string BackupRestaurant::toString() const { return "test"; }
+
+/* Added methods */
+std::string convert_to_dishtype(int num) {
+	if (num == 0) return "VEG";
+	else if (num == 1) return "SPC";
+	else if (num == 2) return "BVG";
+	else if (num == 3) return "ALC";
+	else return "ERROR_DISH";
+}

@@ -1,10 +1,16 @@
 #include "Customer.h"
 
-// Customer
-Customer::Customer(std::string c_name, int c_id) : name(c_name), id(c_id) 
-{
-	
-}
+// Customer parameterize constructor
+Customer::Customer(std::string c_name, int c_id) : name(c_name), id(c_id) {}
+
+// Customer copy constructor
+Customer::Customer(const Customer &customer) : name(customer.name), id(customer.id) {}
+// Customer move constructor
+Customer::Customer(Customer &&customer) : name(customer.name), id(customer.id) {}
+// copy assignment operator
+Customer & Customer::operator=(const Customer &customer) { }
+// move assignment operator
+Customer & Customer::operator=(Customer &&customer) {}
 
 std::string Customer::getName() const { return name; }
 int Customer::getId() const { return id; }
@@ -44,6 +50,10 @@ std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu)
 
 std::string CheapCustomer::toString() const { return "toString of CheapCustomer\n"; }
 
+Customer* CheapCustomer::clone()
+{
+	return new CheapCustomer(this->getName(), this->getId());
+}
 
 // VegetarianCustomer
 //This is a customer that always orders the vegetarian dish with the
@@ -86,6 +96,11 @@ std::vector<int> VegetarianCustomer::order(const std::vector<Dish> &menu)
 	return dishes_id_ordered_by_customer;
 }
 std::string VegetarianCustomer::toString() const { return "test"; }
+
+Customer* VegetarianCustomer::clone()
+{
+	return new VegetarianCustomer(this->getName(), this->getId());
+}
 
 // SpicyCustomer
 SpicyCustomer::SpicyCustomer(std::string name, int id) : Customer(name, id) , firstOrder(true) {}
@@ -143,6 +158,11 @@ std::vector<int> SpicyCustomer::order(const std::vector<Dish> &menu)
 }
 std::string SpicyCustomer::toString() const { return "test SpicyCustomer"; }
 
+Customer* SpicyCustomer::clone()
+{
+	return new SpicyCustomer(this->getName(), this->getId());
+}
+
 
 // AlchoholicCustomer
 AlchoholicCustomer::AlchoholicCustomer(std::string name, int id) : Customer(name,id) {}
@@ -192,3 +212,8 @@ std::vector<int> AlchoholicCustomer::order(const std::vector<Dish> &menu)
 	return dishes_id_ordered_by_customer;
 }
 std::string AlchoholicCustomer::toString() const { return "test AlchoholicCustomer"; }
+
+Customer* AlchoholicCustomer::clone()
+{
+	return new AlchoholicCustomer(this->getName(), this->getId());
+}

@@ -26,7 +26,9 @@ void print_vector_string(std::vector<string> vec_tables)
 
 //////////////
 
-//Restaurant();
+//default constructor
+Restaurant::Restaurant() {}
+//parameterized constructor
 Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 {
 	bool r_num_of_tables_complete = false;
@@ -68,6 +70,14 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 	}
 }
 
+//copy constructor
+Restaurant::Restaurant(const Restaurant &rhs)
+{
+	open = rhs.open;
+	for (int i = 0; i < rhs.tables.size(); i++) {
+
+	}
+}
 void Restaurant::parsingTables(string tables_capacity) 
 {
 	string capacity;
@@ -198,9 +208,17 @@ void Restaurant::start()
 				cout << "closeall command" << endl;
 				ba = new CloseAll();
 				break;
+			case MENU:
+				cout << "menu commend" << endl;
+				ba = new PrintMenu();
+				break;
 
-		/*default:
-			break;*/
+			case BACKUP:
+				cout << "backup commend" << endl;
+				ba = new BackupRestaurant();
+				break;
+			default:
+				break;
 		}
 
 		ba->act(*this);
