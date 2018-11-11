@@ -14,16 +14,16 @@ int extract_table_id(std::vector<string> & vec);
 // TO BE DELETED!
 void print_vector(std::vector<Table*> vec_tables)
 {
-    cout << "Printing Vector" << endl;
-    for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-        cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
+	cout << "Printing Vector" << endl;
+	for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
+		cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
 }
 
 void print_vector_string(std::vector<string> vec_tables)
 {
-    cout << "Printing Vector" << endl;
-    for (std::vector<string>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-        cout << *i << endl;
+	cout << "Printing Vector" << endl;
+	for (std::vector<string>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
+		cout << *i << endl;
 }
 
 //////////////
@@ -32,43 +32,43 @@ Restaurant::Restaurant(){}
 //parameterized constructor
 Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 {
-    bool r_num_of_tables_complete = false;
-    bool r_tables_complete = false;
-    bool r_menu_complete = false;
-    ifstream input_file(configFilePath);
-    int dish_id = 0;
+	bool r_num_of_tables_complete = false;
+	bool r_tables_complete = false;
+	bool r_menu_complete = false;
+	ifstream input_file(configFilePath);
+	int dish_id = 0;
 
-    if (input_file.is_open())
-    {
-        string line;
-        while (getline(input_file, line))
-        {
-            /* ignore line starts with '#' or empty line */
-            if (line[0] == '#' || line.empty())
-                continue;
+	if (input_file.is_open()) 
+	{
+		string line;
+		while (getline(input_file, line)) 
+		{
+			/* ignore line starts with '#' or empty line */
+			if (line[0] == '#' || line.empty())
+				continue;
 
-            if (!r_num_of_tables_complete) {
-                number_of_tables = stoul(line);
-                r_num_of_tables_complete = true;
-                continue;
-            }
+			if (!r_num_of_tables_complete) {
+				number_of_tables = stoul(line);
+				r_num_of_tables_complete = true;
+				continue;
+			}
 
-            if (!r_tables_complete) {
-                parsingTables(line);
-                r_tables_complete = true;
-                continue;
-            }
+			if (!r_tables_complete) {
+				parsingTables(line);
+				r_tables_complete = true;
+				continue;
+			}
 
-            parsingDishes(line, dish_id);
+			parsingDishes(line, dish_id);
 
-            // Advance Dish id
-            dish_id++;
-        }
-        cout << "Finishing parsing configuration file" << endl;
-    }
-    else {
-        std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
-    }
+			// Advance Dish id
+			dish_id++;
+		}
+		cout << "Finishing parsing configuration file" << endl;
+	}
+	else {
+		std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
+	}
 }
 
 //copy constructor
@@ -81,34 +81,34 @@ Restaurant::Restaurant(const Restaurant &rhs)
 }
 void Restaurant::parsingTables(string tables_capacity)
 {
-    string capacity;
-    stringstream ss(tables_capacity);
+	string capacity;
+	stringstream ss(tables_capacity);
 
-    while (getline(ss, capacity, DELIMITER_COMMA))
-    {
-        Table * table = new Table(stoul(capacity));
-        // create a new table with certain capacity
-        cout << "create a NEW table with capacity " << stoul(capacity) << "table is_open? " << table->isOpen() << endl;
+	while (getline(ss, capacity, DELIMITER_COMMA))
+	{
+		Table * table = new Table(stoul(capacity));
+		// create a new table with certain capacity
+		cout << "create a NEW table with capacity " << stoul(capacity) << "table is_open? " << table->isOpen() << endl;
 
-        // insert table to the vector of tables. push_back adds a new value to the end of the array(vector).
-        tables.push_back(table);
-    }
+		// insert table to the vector of tables. push_back adds a new value to the end of the array(vector).
+		tables.push_back(table);
+	}
 }
 
 void Restaurant::parsingDishes(string dish_information, int dish_id)
 {
-    string name, type, price;
-    stringstream ss(dish_information);
+	string name, type, price;
+	stringstream ss(dish_information);
 
-    getline(ss, name, DELIMITER_COMMA);
-    getline(ss, type, DELIMITER_COMMA);
-    getline(ss, price, DELIMITER_COMMA);
+	getline(ss, name, DELIMITER_COMMA);
+	getline(ss, type, DELIMITER_COMMA);
+	getline(ss, price, DELIMITER_COMMA);
 
-    // Create a Dish on the STK. coping it to the vector of Dishes.
-    Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
+	// Create a Dish on the STK. coping it to the vector of Dishes.
+	Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
 
-    // Add the Dish to the menu vector
-    menu.push_back(dish);
+	// Add the Dish to the menu vector
+	menu.push_back(dish);
 //	cout << "name = " << name << " type= " << type << " price = " << price << endl;
 //	cout << "x" << menu.at(0).getName() << endl;
 }
@@ -236,26 +236,26 @@ void Restaurant::start()
 
 int Restaurant::getNumOfTables() const
 {
-    //return tables.size();
-    return number_of_tables;
+	//return tables.size();
+	return number_of_tables;
 }
 
-Table* Restaurant::getTable(int ind)
+Table* Restaurant::getTable(int ind) 
 {
-    return tables.at(ind);
+	return tables.at(ind);
 }
 
 
 void Restaurant::setOpen(bool value) {
-    this->open = value;
-}
+		this->open = value;
+	}
 
 // Return a reference to the history of actions
 //const std::vector<BaseAction*>& Restaurant::getActionsLog() const{}
 
-std::vector<Dish> &Restaurant::getMenu() {
-    return this->menu;
-}
+	std::vector<Dish> &Restaurant::getMenu() {
+		return this->menu;
+	}
 
 
 /* Added methods */
@@ -296,10 +296,9 @@ void split_str2vec(std::vector<string> *vec_str, std::string str) {
     }
 }
 
-
 /* Open Action */
-void erase_op_code(std::vector<string> &vec) {
-    vec.erase(vec.begin() + 0);
+void erase_op_code(std::vector<string> &vec) {		
+	vec.erase(vec.begin() + 0);
 }
 
 int extract_table_id(std::vector<string> &vec) {
@@ -330,12 +329,12 @@ void create_customers(std::vector<string> argv, std::vector<Customer *> &vec_cus
             case chp:
                 customer = new CheapCustomer(customer_name, customer_id);
                 break;
-            case spc:
-                customer = new SpicyCustomer(customer_name, customer_id);
-                break;
-            case alc:
-                customer = new AlchoholicCustomer(customer_name, customer_id);
-                break;
+			case spc:
+			    customer = new SpicyCustomer(customer_name, customer_id);
+			    break;
+			case alc:
+				customer = new AlchoholicCustomer(customer_name, customer_id);
+				break;
         }
         vec_customers.push_back(customer);
         customer_id++;
