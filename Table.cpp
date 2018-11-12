@@ -31,6 +31,8 @@ Table& Table::operator=(const Table &table) {
 		Customer* cloned = temp->clone();
 		customersList.push_back(cloned);
 	}
+
+	return *this;
 }
 
 //move constructor
@@ -62,6 +64,8 @@ Table& Table::operator=(Table &&table) {
 		customersList.push_back(table.customersList.at(i));
 		table.customersList.at(i) = nullptr;
 	}
+
+	return *this;
 }
 
 int Table::getCapacity() const
