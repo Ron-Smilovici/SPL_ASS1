@@ -71,10 +71,10 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 }
 
 //copy constructor
-Restaurant::Restaurant(const Restaurant &rhs)
+Restaurant::Restaurant(const Restaurant &restaurant)
 {
-	open = rhs.open;
-	for (int i = 0; i < rhs.tables.size(); i++) {
+	open = restaurant.open;
+	for (int i = 0; i < restaurant.tables.size(); i++) {
 
 	}
 }
