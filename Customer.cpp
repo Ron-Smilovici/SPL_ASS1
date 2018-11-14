@@ -35,8 +35,10 @@ std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu)
 
 	for (std::vector<Dish>::const_iterator i = menu.begin() + 1; i != menu.end(); ++i)
 	{
-		if ((*i).getPrice() < lowest_dish_price)
+		if ((*i).getPrice() < lowest_dish_price) {
 			dish_id = (*i).getId();
+			lowest_dish_price = (*i).getPrice();
+		}
 	}
 
 	dishes_id_ordered_by_customer.push_back(dish_id);
@@ -57,7 +59,7 @@ Customer* CheapCustomer::clone()
 
 // VegetarianCustomer
 //This is a customer that always orders the vegetarian dish with the
-//smallest id in the menu, and the most expensive beverage(Non - alcoholic). (3 - letter code –
+//smallest id in the menu, and the most expensive beverage(Non - alcoholic). (3 - letter code ï¿½
 //	veg)
 VegetarianCustomer::VegetarianCustomer(std::string name, int id) : Customer(name, id) {}
 std::vector<int> VegetarianCustomer::order(const std::vector<Dish> &menu) 
@@ -174,8 +176,9 @@ std::vector<int> AlchoholicCustomer::order(const std::vector<Dish> &menu)
 
 	// Copy all alchoholic dishes from menu to a temp vector
 	for (std::vector<Dish>::const_iterator i = menu.begin(); i != menu.end(); ++i)
-		if ((*i).getType() == ALC)
+		if ((*i).getType() == ALC) {
 			vec_alc_dishes.push_back(*i);
+		}
 	
 	cout << "print vector of alchoholic dishes" << endl;
 	for (std::vector<Dish>::const_iterator i = vec_alc_dishes.begin(); i != vec_alc_dishes.end(); ++i)

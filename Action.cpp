@@ -39,7 +39,7 @@ void OpenTable::act(Restaurant &restaurant)
 	// add customers to table
 	for (std::vector<Customer*>::const_iterator i = customers.begin(); i != customers.end(); ++i)
 	{
-		cout << "customer name " << (*i)->getName() << " will be added to table " << tableId << endl;
+		cout << "customer name " << (*i)->getName() << " id " << (*i)->getId() << " will be added to table " << tableId << endl;
 		curr_table->addCustomer(*i);
 	}
 }
@@ -55,16 +55,45 @@ void Order::act(Restaurant &restaurant)
 {
 	Table * curr_table;
 
-	if (!(curr_table = restaurant.getTable(tableId)))
-	{
-		cout << "Need to add error could not find table" << endl;
-	}
-
+	curr_table = restaurant.getTable(tableId);
 	curr_table->order(restaurant.getMenu());
 }
+
 std::string Order::toString() const { return "test"; }
 
+// Move Action
+MoveCustomer::MoveCustomer(int src, int dst, int customerId) : BaseAction(), srcTable(src), dstTable(dst), id(customerId) {}
 
+/*Moves a customer from one table to another. Also moves all orders
+made by this customer from the bill of the origin table to the bill of the destination table.
+If the origin table has no customers left after this move, the program will close the origin
+table. */
+void MoveCustomer::act(Restaurant &restaurant) 
+{
+	Customer * customter_to_move;
+	Table * src_table, * dst_table;
+	std::vector<OrderPair> orders_from_customer_to_move;
+	src_table = restaurant.getTable(this->srcTable);
+	customter_to_move = src_table->getCustomer(this->id);
+	dst_table = restaurant.getTable(this->dstTable);
+
+	// get orders from customter_to_move
+	orders_from_customer_to_move = src_table->getCustomerOrders(customter_to_move->getId());
+	// add orders to the dst_table
+	dst_table->updateOrders(orders_from_customer_to_move);
+	// add customer to dst table id
+	dst_table->addCustomer(customter_to_move);
+
+	// remove customer from src table id and the dishes he oredered on the src table
+	src_table->removeCustomer(customter_to_move->getId());
+
+
+	// check if src table needs to be closed due to no more customers
+
+
+
+}
+std::string MoveCustomer::toString() const { return "toString of MoveCustomer "; }
 
 // Close action
 Close::Close(int id) : BaseAction(), tableId(id) {}
@@ -136,6 +165,51 @@ std::string PrintMenu::toString() const
 	return "test";
 }
 
+//PrintTableStatus action
+PrintTableStatus::PrintTableStatus(int id) :BaseAction(), tableId(id) {}
+
+void PrintTableStatus::act(Restaurant &restaurant) 
+{
+	Table * curr_table;
+	std::stringstream customer_string, dishes_string;
+
+	curr_table = restaurant.getTable(tableId);
+	if (curr_table->isOpen())
+	{
+		open = "open";
+		for (std::vector<Customer*>::const_iterator i = curr_table->getCustomers().begin();
+				i != curr_table->getCustomers().end();
+				++i)
+			customer_string << (*i)->getId() << " " << (*i)->getName() << endl;
+
+		customers = customer_string.str();
+
+		for (std::vector<OrderPair>::const_iterator i = curr_table->getOrders().begin();
+				i != curr_table->getOrders().end();
+				++i)
+			dishes_string << (*i).second.getName() << " " << (*i).second.getPrice() << "NIS " << (*i).first << endl;
+		
+		dishes = dishes_string.str();
+		bill = curr_table->getBill();
+	}
+	else {
+		open = "closed";
+	}
+}
+
+std::string PrintTableStatus::toString() const 
+{
+	std::stringstream sstr;
+	sstr << "Table " << tableId << " status: " << open << endl;
+	if (open == "open") {
+		sstr << "Customers:" << endl;
+		sstr << customers;
+		sstr << "Orders:" << endl;
+		sstr << dishes << endl;
+		sstr << "Current Bill: " << bill << "NIS" << endl;
+	}
+	return sstr.str();
+}
 
 //BackupRestaurant action
 

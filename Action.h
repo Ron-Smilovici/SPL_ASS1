@@ -49,7 +49,7 @@ public:
 	std::string toString() const;
 private:
 	const int tableId;
-	const std::vector<Customer *> customers;
+	std::vector<Customer *> customers;
 };
 
 
@@ -111,6 +111,10 @@ public:
 	std::string toString() const;
 private:
 	const int tableId;
+	std::string open;
+	int bill;
+	std::string customers;
+	std::string dishes;
 };
 
 

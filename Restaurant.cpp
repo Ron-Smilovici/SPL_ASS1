@@ -29,7 +29,7 @@ void print_vector_string(std::vector<string> vec_tables)
 //default constructor
 Restaurant::Restaurant() {}
 //parameterized constructor
-Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
+Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0), customer_arrived_so_far(0)
 {
 	bool r_num_of_tables_complete = false;
 	bool r_tables_complete = false;
@@ -71,10 +71,10 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0)
 }
 
 //copy constructor
-Restaurant::Restaurant(const Restaurant &rhs)
+Restaurant::Restaurant(const Restaurant &restaurant)
 {
-	open = rhs.open;
-	for (int i = 0; i < rhs.tables.size(); i++) {
+	open = restaurant.open;
+	for (int i = 0; i < restaurant.tables.size(); i++) {
 
 	}
 }
@@ -177,18 +177,43 @@ void Restaurant::start()
 					continue;
 				}
 
+				if (!(this->getTable(table_id)))
+				{
+					cout << "error- table object doesn't exist, shouldn't happen" << endl;
+				}
+
 				ba = new Order(table_id);
 			break;
-			/*case MOVE:
+			case MOVE:
+				int src_id, dst_id, customer_id;
 				cout << "move command" << endl;
-				BaseAction *ba = new OpenTable(table_id, vec_customers);
+				//int src, int dst, int customerId
+				src_id = extract_table_id(argv);
+				dst_id = extract_table_id(argv);
+				customer_id = extract_table_id(argv);
+				cout << "src=" << src_id << ", dst=" << dst_id << ", customer_id=" << customer_id << endl;
+				/* If the src table doesn't exist or is already closed and
+					If the dst table doesn't exist or is already closed this action should result in an error 
+					IF the customer ID doesn't exist in the src table id
+					If the destination table has no available seats for additional customers */
+
+				if (!is_table_id_valid(src_id) || !is_table_open(src_id) ||
+					!is_table_id_valid(dst_id) || !is_table_open(dst_id) ||
+					!(this->getTable(src_id)->getCustomer(customer_id)) ||
+					this->getTable(dst_id)->getCapacity() <= this->getTable(dst_id)->getCustomers().size()) {
+
+					cout << "Cannot move customer" << endl;
+					cout << "table id = " << src_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					continue;
+				}
+				
+				ba = new MoveCustomer(src_id, dst_id, customer_id);
 			break;
 			case CLOSEALL:
 				cout << "closeall command" << endl;
-				BaseAction *ba = new OpenTable(table_id, vec_customers);
+				ba = new CloseAll();
 				finish = true;
 			break;
-			*/
 			case CLOSE:
 				cout << "close command" << endl;
 				table_id = extract_table_id(argv);
@@ -203,16 +228,14 @@ void Restaurant::start()
 
 				ba = new Close(table_id);
 				break;
-
-			case CLOSEALL:
-				cout << "closeall command" << endl;
-				ba = new CloseAll();
-				break;
 			case MENU:
 				cout << "menu commend" << endl;
 				ba = new PrintMenu();
 				break;
-
+			case STATUS:
+				table_id = extract_table_id(argv);
+				ba = new PrintTableStatus(table_id);
+				break;
 			case BACKUP:
 				cout << "backup commend" << endl;
 				ba = new BackupRestaurant();
@@ -256,6 +279,12 @@ std::vector<Dish>& Restaurant::getMenu()
 	return this->menu;
 }
 
+void Restaurant::set_customer_arrived_so_far(int number_of_customers) 
+{
+	this->customer_arrived_so_far = number_of_customers;
+}
+
+int Restaurant::get_customer_arrived_so_far() { return this->customer_arrived_so_far; }
 
 /* Added methods */
 DishType convert_to_dish(const std::string& str)
@@ -275,6 +304,7 @@ Actions convert_to_action(const std::string& str)
 	else if (str == "move") return MOVE;
 	else if (str == "close") return CLOSE;
 	else if (str == "closeall") return CLOSEALL;
+	else if (str == "status") return STATUS;
 	else return ERROR_ACTION;
 
 }
@@ -297,7 +327,6 @@ void split_str2vec (std::vector<string> * vec_str, std::string str)
 	}
 }
 
-
 /* Open Action */
 void erase_op_code(std::vector<string> & vec) 
 {
@@ -314,7 +343,6 @@ int extract_table_id(std::vector<string> & vec)
 void create_customers(std::vector<string> argv, std::vector<Customer *> & vec_customers, Restaurant & res)
 {
 	Customer * customer;
-	int customer_id = 0;
 	std::string customer_name, customer_str_type;
 
 	for (std::vector<string>::const_iterator i = argv.begin(); i != argv.end(); ++i) {
@@ -324,25 +352,25 @@ void create_customers(std::vector<string> argv, std::vector<Customer *> & vec_cu
 		getline(ss, customer_str_type, ',');
 		CustomerType customer_type = convert_to_customer(customer_str_type);
 
-		cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << endl;
+		cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << " id " << res.get_customer_arrived_so_far() << endl;
 		switch (customer_type)
 		{
 		case veg:
-			customer = new VegetarianCustomer(customer_name, customer_id);
+			customer = new VegetarianCustomer(customer_name, res.get_customer_arrived_so_far());
 			break;
 		case chp:
-			customer = new CheapCustomer(customer_name, customer_id);
+			customer = new CheapCustomer(customer_name, res.get_customer_arrived_so_far());
 			break;
 		case spc:
-			customer = new SpicyCustomer(customer_name, customer_id);
+			customer = new SpicyCustomer(customer_name, res.get_customer_arrived_so_far());
 			break;
 		case alc:
-			customer = new AlchoholicCustomer(customer_name, customer_id);
+			customer = new AlchoholicCustomer(customer_name, res.get_customer_arrived_so_far());
 
 			break;
 		}
 		vec_customers.push_back(customer);
-		customer_id++;
+		res.set_customer_arrived_so_far(res.get_customer_arrived_so_far() + 1);
 	}
 }
 

@@ -20,21 +20,19 @@ using namespace std;
 #define is_table_id_valid(t_id) !(t_id < 0 || t_id >= this->getNumOfTables())
 #define is_table_open(t_id) (this->getTable(t_id))->isOpen()
 
-
-//#define is_table_ok(t_id, is_open) !(t_id < 0 || t_id >= this->getNumOfTables() || \
-	//									!(this->getTable(t_id)) || \
-		//								((this->getTable(t_id))->isOpen()))
-
 class Restaurant {
 public:
 	Restaurant();
 	Restaurant(const std::string &configFilePath);
+	Restaurant(const Restaurant &restaurant); //copy constructor
 	void start();
 	int getNumOfTables() const; //
 	void setOpen(bool value);
 	Table* getTable(int ind);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
 	std::vector<Dish>& getMenu();
+	void set_customer_arrived_so_far(int number_of_customers);
+	int get_customer_arrived_so_far();
 
 private:
 	bool open;
@@ -44,6 +42,7 @@ private:
 
 	/* private members */
 	unsigned int number_of_tables;
+	int customer_arrived_so_far;
 	/* private methods */
 	void parsingTables(string tables_capacity);
 	void parsingDishes(string dish_information, int dish_id);
