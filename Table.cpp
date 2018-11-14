@@ -1,7 +1,7 @@
 #include "Table.h"
 
 Table::Table(int t_capacity) : capacity(t_capacity) , open(false) {}
-//copy constuctor
+//copy constructor
 Table::Table(const Table &table)
 {
 	open = table.open;

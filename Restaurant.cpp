@@ -78,6 +78,7 @@ Restaurant::Restaurant(const Restaurant &restaurant)
 
 	}
 }
+
 void Restaurant::parsingTables(string tables_capacity) 
 {
 	string capacity;
@@ -305,6 +306,8 @@ Actions convert_to_action(const std::string& str)
 	else if (str == "close") return CLOSE;
 	else if (str == "closeall") return CLOSEALL;
 	else if (str == "status") return STATUS;
+	else if (str == "backup") return BACKUP;
+	else if (str == "menu") return MENU;
 	else return ERROR_ACTION;
 
 }
