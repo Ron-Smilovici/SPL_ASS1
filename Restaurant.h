@@ -46,6 +46,12 @@ private:
 	/* private methods */
 	void parsingTables(string tables_capacity);
 	void parsingDishes(string dish_information, int dish_id);
+	void split_str2vec(std::vector<string> * vec_str, std::string str);
+	Actions convert_to_action(const std::string& str);
+	DishType convert_to_dish(const std::string& str);
+	void create_customers(std::vector<string> argv, std::vector<Customer *> & customers, Restaurant & res);
+	void erase_op_code(std::vector<string> & vec);
+	int extract_table_id(std::vector<string> & vec);
 };
 
 #endif

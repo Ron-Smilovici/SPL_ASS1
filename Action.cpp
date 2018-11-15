@@ -118,7 +118,7 @@ void Close::act(Restaurant &restaurant)
 std::string Close::toString() const 
 {
 	std::stringstream sstr;
-	sstr << "Table " << tableId << " was closed. Bill " << this->bill << endl;
+	sstr << "Table " << tableId << " was closed. Bill " << this->bill << "NIS" << endl;
 	//sstr << "Address: houseNumber: " << houseNumber << " streetName: " << streetName << " zipCode: " << zipCode;
 	return sstr.str(); 
 }
@@ -135,14 +135,17 @@ void CloseAll::act(Restaurant &restaurant)
 		if (restaurant.getTable(i)->isOpen()) {
 			Close close_table(i);
 			close_table.act(restaurant);
-			cout << close_table.toString();
+			table_bills << close_table.toString();
 		}
 	}
 
 	// close the restaurant
 	restaurant.setOpen(false);
 }
-std::string CloseAll::toString() const { return ""; }
+std::string CloseAll::toString() const 
+{		
+	return table_bills.str();
+}
 
 // PrintMenu action
 
@@ -205,8 +208,8 @@ std::string PrintTableStatus::toString() const
 		sstr << "Customers:" << endl;
 		sstr << customers;
 		sstr << "Orders:" << endl;
-		sstr << dishes << endl;
-		sstr << "Current Bill: " << bill << "NIS" << endl;
+		sstr << dishes;
+		sstr << "Current Bill: " << bill << "NIS";
 	}
 	return sstr.str();
 }

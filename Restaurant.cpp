@@ -1,14 +1,5 @@
 #include "Restaurant.h"
 
-/* Forward declaration */
-DishType convert_to_dish(const std::string& str);
-Actions convert_to_action(const std::string& str);
-void split_str2vec(std::vector<string> * vec_str, std::string str);
-void create_customers(std::vector<string> argv, std::vector<Customer *> & customers, Restaurant & res);
-
-void erase_op_code(std::vector<string> & vec);
-int extract_table_id(std::vector<string> & vec);
-
 // TO BE DELETED!
 void print_vector(std::vector<Table*> vec_tables)
 {
@@ -125,7 +116,7 @@ void Restaurant::start()
 	open = true;
 	std::cout << "Restaurant is now open!" << std::endl;
 
-	while (getline(cin, user_input) && !finish) {
+	while (!finish && getline(cin, user_input)) {
 		vector<string> argv;
 		vector<Customer *> vec_customers;
 
@@ -252,7 +243,6 @@ void Restaurant::start()
 		actionsLog.push_back(ba);
 		cout << endl;
 	}
-	cout << "finishing commands" << endl;
 }
 
 
@@ -288,7 +278,7 @@ void Restaurant::set_customer_arrived_so_far(int number_of_customers)
 int Restaurant::get_customer_arrived_so_far() { return this->customer_arrived_so_far; }
 
 /* Added methods */
-DishType convert_to_dish(const std::string& str)
+DishType Restaurant::convert_to_dish(const std::string& str)
 {
 	if (str == "VEG") return VEG;
 	else if (str == "SPC") return SPC;
@@ -297,7 +287,7 @@ DishType convert_to_dish(const std::string& str)
 	else return ERROR_DISH;
 }
 
-Actions convert_to_action(const std::string& str)
+Actions Restaurant::convert_to_action(const std::string& str)
 {
 	//OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
 	if (str == "open") return OPEN;
@@ -321,7 +311,7 @@ CustomerType convert_to_customer(const std::string& str)
 	else return err;
 }
 
-void split_str2vec (std::vector<string> * vec_str, std::string str) 
+void Restaurant::split_str2vec (std::vector<string> * vec_str, std::string str)
 {
 	std::string token;
 	std::istringstream ss(str);
@@ -331,19 +321,19 @@ void split_str2vec (std::vector<string> * vec_str, std::string str)
 }
 
 /* Open Action */
-void erase_op_code(std::vector<string> & vec) 
+void Restaurant::erase_op_code(std::vector<string> & vec)
 {
 	vec.erase(vec.begin() + 0); 
 }
 
-int extract_table_id(std::vector<string> & vec) 
+int Restaurant::extract_table_id(std::vector<string> & vec)
 {
 	int id = stoi(vec.at(0), nullptr, 10);
 	vec.erase(vec.begin() + 0);
 	return id;
 }
 
-void create_customers(std::vector<string> argv, std::vector<Customer *> & vec_customers, Restaurant & res)
+void Restaurant::create_customers(std::vector<string> argv, std::vector<Customer *> & vec_customers, Restaurant & res)
 {
 	Customer * customer;
 	std::string customer_name, customer_str_type;
