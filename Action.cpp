@@ -39,7 +39,7 @@ void OpenTable::act(Restaurant &restaurant)
 	// add customers to table
 	for (std::vector<Customer*>::const_iterator i = customers.begin(); i != customers.end(); ++i)
 	{
-		cout << "customer name " << (*i)->getName() << " id " << (*i)->getId() << " will be added to table " << tableId << endl;
+		//cout << "customer name " << (*i)->getName() << " id " << (*i)->getId() << " will be added to table " << tableId << endl;
 		curr_table->addCustomer(*i);
 	}
 }
@@ -59,20 +59,17 @@ void Order::act(Restaurant &restaurant)
 	curr_table->order(restaurant.getMenu());
 }
 
-std::string Order::toString() const { return "test"; }
+std::string Order::toString() const { return ""; }
 
 // Move Action
 MoveCustomer::MoveCustomer(int src, int dst, int customerId) : BaseAction(), srcTable(src), dstTable(dst), id(customerId) {}
 
-/*Moves a customer from one table to another. Also moves all orders
-made by this customer from the bill of the origin table to the bill of the destination table.
-If the origin table has no customers left after this move, the program will close the origin
-table. */
 void MoveCustomer::act(Restaurant &restaurant) 
 {
 	Customer * customter_to_move;
 	Table * src_table, * dst_table;
 	std::vector<OrderPair> orders_from_customer_to_move;
+
 	src_table = restaurant.getTable(this->srcTable);
 	customter_to_move = src_table->getCustomer(this->id);
 	dst_table = restaurant.getTable(this->dstTable);
@@ -83,17 +80,14 @@ void MoveCustomer::act(Restaurant &restaurant)
 	dst_table->updateOrders(orders_from_customer_to_move);
 	// add customer to dst table id
 	dst_table->addCustomer(customter_to_move);
-
 	// remove customer from src table id and the dishes he oredered on the src table
 	src_table->removeCustomer(customter_to_move->getId());
 
-
 	// check if src table needs to be closed due to no more customers
-
-
-
+	if (!(src_table->getCustomers().size()))
+		src_table->closeTable();
 }
-std::string MoveCustomer::toString() const { return "toString of MoveCustomer "; }
+std::string MoveCustomer::toString() const { return ""; }
 
 // Close action
 Close::Close(int id) : BaseAction(), tableId(id) {}
@@ -105,7 +99,7 @@ void Close::act(Restaurant &restaurant)
 	curr_table = restaurant.getTable(tableId);
 	if (!curr_table)
 	{
-		cout << "Close::act curr_table is NULL" << endl;
+		//cout << "Close::act curr_table is NULL" << endl;
 		return;
 	}
 
@@ -119,7 +113,6 @@ std::string Close::toString() const
 {
 	std::stringstream sstr;
 	sstr << "Table " << tableId << " was closed. Bill " << this->bill << "NIS" << endl;
-	//sstr << "Address: houseNumber: " << houseNumber << " streetName: " << streetName << " zipCode: " << zipCode;
 	return sstr.str(); 
 }
 
@@ -209,7 +202,7 @@ std::string PrintTableStatus::toString() const
 		sstr << customers;
 		sstr << "Orders:" << endl;
 		sstr << dishes;
-		sstr << "Current Bill: " << bill << "NIS";
+		sstr << "Current Bill: " << bill << "NIS" << endl;
 	}
 	return sstr.str();
 }

@@ -11,7 +11,11 @@ Customer::Customer(Customer &&customer) : name(customer.name), id(customer.id) {
 Customer & Customer::operator=(const Customer &customer) { }
 // move assignment operator
 Customer & Customer::operator=(Customer &&customer) {}
-
+// Destructor
+Customer::~Customer() 
+{
+	cout << "Destructor Customer was called" << endl;
+}
 std::string Customer::getName() const { return name; }
 int Customer::getId() const { return id; }
 
@@ -26,7 +30,7 @@ std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu)
 	int dish_id;
 
 	if (this->ordered) {
-		cout << "CheapCustomer already ordered, return an empty vector" << endl; // will be deleted.
+		//cout << "CheapCustomer already ordered, return an empty vector" << endl; // will be deleted.
 		return dishes_id_ordered_by_customer;
 	}
 
@@ -58,10 +62,8 @@ Customer* CheapCustomer::clone()
 }
 
 // VegetarianCustomer
-//This is a customer that always orders the vegetarian dish with the
-//smallest id in the menu, and the most expensive beverage(Non - alcoholic). (3 - letter code �
-//	veg)
 VegetarianCustomer::VegetarianCustomer(std::string name, int id) : Customer(name, id) {}
+
 std::vector<int> VegetarianCustomer::order(const std::vector<Dish> &menu) 
 {
 	std::vector<int> dishes_id_ordered_by_customer;
@@ -69,34 +71,37 @@ std::vector<int> VegetarianCustomer::order(const std::vector<Dish> &menu)
 	bool found_veg = false;
 	bool found_bvg = false;
 	int bvg_dish_price = MIN;
-	cout << " VegetarianCustomer::order starts" << endl;
+	//cout << " VegetarianCustomer::order starts" << endl;
 	for (std::vector<Dish>::const_iterator i = menu.begin(); i != menu.end(); ++i)
 	{
 		// orders the veg dish with smallest id
 		if (!found_veg && ((*i).getType() == VEG))
 		{
 			veg_dish_id = (*i).getId();
-			cout << " VegetarianCustomer::order found veg" << endl;
 			found_veg = true;
 		}
 
 		// orders the most expensive beverage(Non - alcoholic)
-		if (!found_bvg && ((*i).getType() == BVG) && ((*i).getPrice() > bvg_dish_price))
+		if (((*i).getType() == BVG) && ((*i).getPrice() > bvg_dish_price))
 		{
 			bvg_dish_id = (*i).getId();
-			cout << " VegetarianCustomer::order found bvg" << endl;
-			found_bvg = true;
+			bvg_dish_price = (*i).getPrice();
 		}
 	}
+	if (bvg_dish_id != -1)
+		found_bvg = true;
 
 	if (found_veg && found_bvg)
 	{
+		//cout << " VegetarianCustomer::order found veg" << endl;
+		//cout << " VegetarianCustomer::order found bvg" << endl;
 		dishes_id_ordered_by_customer.push_back(veg_dish_id);
 		dishes_id_ordered_by_customer.push_back(bvg_dish_id);
 	}
 
 	return dishes_id_ordered_by_customer;
 }
+
 std::string VegetarianCustomer::toString() const { return "test"; }
 
 Customer* VegetarianCustomer::clone()
@@ -131,7 +136,7 @@ std::vector<int> SpicyCustomer::order(const std::vector<Dish> &menu)
 
 		// if there isn't a spc dish in the menu customer will not order
 		if (!spc_dish_exist) {
-			cout << "there is no spc dish in the menu, customer will not orderd" << endl;
+			//cout << "there is no spc dish in the menu, customer will not orderd" << endl;
 			return dishes_id_ordered_by_customer;
 		}
 
@@ -168,43 +173,52 @@ Customer* SpicyCustomer::clone()
 
 // AlchoholicCustomer
 AlchoholicCustomer::AlchoholicCustomer(std::string name, int id) : Customer(name,id) {}
+
 std::vector<int> AlchoholicCustomer::order(const std::vector<Dish> &menu) 
 { 
-	std::vector<Dish> vec_alc_dishes;
+	std::vector<Dish> vec_alc_dishes_before_sort;
+	std::vector<Dish> vec_alc_dishes_after_sort;
 	std::vector<int> dishes_id_ordered_by_customer;
-	std::vector<Dish> vec_alchoholic_dishes_ordered;
-
+	std::vector<std::pair<int,int>> dish_prices_id;
+	
 	// Copy all alchoholic dishes from menu to a temp vector
 	for (std::vector<Dish>::const_iterator i = menu.begin(); i != menu.end(); ++i)
 		if ((*i).getType() == ALC) {
-			vec_alc_dishes.push_back(*i);
+			vec_alc_dishes_before_sort.push_back(*i);
+			dish_prices_id.push_back(std::make_pair((*i).getPrice(),(*i).getId()));
 		}
 	
-	cout << "print vector of alchoholic dishes" << endl;
-	for (std::vector<Dish>::const_iterator i = vec_alc_dishes.begin(); i != vec_alc_dishes.end(); ++i)
-	{
-		cout << "RON: Name " << (*i).getName() << " id " << (*i).getId() << " price " << (*i).getPrice() << endl;
-	}
-
-
-	// sort vec_alc_dishes - using default comparison (operator <):
-	std::sort(vec_alc_dishes.begin(), vec_alc_dishes.end());
+	/*cout << "alchoholic dishes before sort:" << endl;
+	for (std::vector<Dish>::const_iterator i = vec_alc_dishes_before_sort.begin(); i != vec_alc_dishes_before_sort.end(); ++i)
+	{ cout << "Dish: Name " << (*i).getName() << " id " << (*i).getId() << " price " << (*i).getPrice() << endl;}*/
 	
-	cout << "print vector of alchoholic dishes after sort!!!" << endl;
-	for (std::vector<Dish>::const_iterator j = vec_alc_dishes.begin(); j != vec_alc_dishes.end(); ++j)
+	// Using simple sort() function to sort the alc dishes by price
+	sort(dish_prices_id.begin(), dish_prices_id.end());
+	for (std::vector< std::pair<int, int>>::const_iterator i = dish_prices_id.begin(); i != dish_prices_id.end(); ++i)
 	{
-		cout << "DAN: Name " << (*j).getName() << " id " << (*j).getId() << " price " << (*j).getPrice() << endl;
+		for (std::vector<Dish>::const_iterator j = vec_alc_dishes_before_sort.begin(); j != vec_alc_dishes_before_sort.end(); ++j)
+	{
+			if ((*j).getId() == (*i).second) {
+				vec_alc_dishes_after_sort.push_back(*j);
+				break;
+			}
+	}
+	
 	}
 
-
-	for (std::vector<Dish>::const_iterator i = vec_alc_dishes.begin(); i != vec_alc_dishes.end(); ++i)
+	/*cout << "alchoholic dishes after sort:" << endl;
+	for (std::vector<Dish>::const_iterator j = vec_alc_dishes_after_sort.begin(); j != vec_alc_dishes_after_sort.end(); ++j)
+	{ cout << "Dish: Name " << (*j).getName() << " id " << (*j).getId() << " price " << (*j).getPrice() << endl;}*/
+	
+	// take the alc dish that wasn't order yet (doesn't exist in the dishes_id_ordered_by_customer)
+	for (std::vector<Dish>::const_iterator i = vec_alc_dishes_after_sort.begin(); i != vec_alc_dishes_after_sort.end(); ++i)
 	{
 		std::vector<Dish>::iterator it;
 		it = find(OrderedAlcDishes.begin(), OrderedAlcDishes.end(), *i);
 		if (it != OrderedAlcDishes.end())
-			std::cout << "Dish " << (*i).getName() << " already oredered continue to the next one" << endl;
+			;// std::cout << "Dish " << (*i).getName() << " already oredered continue to the next one" << endl;
 		else {
-			std::cout << "Dish " << (*i).getName() << " wasn't oreder before, order it now" << endl;
+			//std::cout << "Dish " << (*i).getName() << " wasn't oreder before, order it now" << endl;
 			// enter the new dish to the OrderedAlcDishes vector
 			OrderedAlcDishes.push_back(*i);
 			dishes_id_ordered_by_customer.push_back((*i).getId());
@@ -219,4 +233,10 @@ std::string AlchoholicCustomer::toString() const { return "test AlchoholicCustom
 Customer* AlchoholicCustomer::clone()
 {
 	return new AlchoholicCustomer(this->getName(), this->getId());
+}
+
+AlchoholicCustomer::~AlchoholicCustomer() 
+{
+	cout << "Destructor AlchoholicCustomer called" << endl;
+	OrderedAlcDishes.clear();
 }

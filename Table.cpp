@@ -7,11 +7,11 @@ Table::Table(const Table &table)
 	open = table.open;
 	capacity = table.capacity;
 
-	for (int i = 0; i < table.orderList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.orderList.size()); ++i) {
 		orderList.push_back(table.orderList.at(i));
 	}
 
-	for (int i = 0; i < table.customersList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.customersList.size()); ++i) {
 		Customer* temp = table.customersList.at(i);
 		Customer* cloned = temp->clone();
 		customersList.push_back(cloned);
@@ -22,11 +22,11 @@ Table& Table::operator=(const Table &table) {
 	open = table.open;
 	capacity = table.capacity;
 
-	for (int i = 0; i < table.orderList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.orderList.size()); ++i) {
 		orderList.push_back(table.orderList.at(i));
 	}
 
-	for (int i = 0; i < table.customersList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.customersList.size()); ++i) {
 		Customer* temp = table.customersList.at(i);
 		Customer* cloned = temp->clone();
 		customersList.push_back(cloned);
@@ -41,11 +41,11 @@ Table::Table(Table &&table)
 	open = table.open;
 	capacity = table.capacity;
 
-	for (int i = 0; i < table.orderList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.orderList.size()); ++i) {
 		orderList.push_back(table.orderList.at(i));
 	}
 
-	for (int i = 0; i < table.customersList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.customersList.size()); ++i) {
 		customersList.push_back(table.customersList.at(i));
 		table.customersList.at(i) = nullptr;
 	}
@@ -56,11 +56,11 @@ Table& Table::operator=(Table &&table) {
 	open = table.open;
 	capacity = table.capacity;
 
-	for (int i = 0; i < table.orderList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.orderList.size()); ++i) {
 		orderList.push_back(table.orderList.at(i));
 	}
 
-	for (int i = 0; i < table.customersList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(table.customersList.size()); ++i) {
 		customersList.push_back(table.customersList.at(i));
 		table.customersList.at(i) = nullptr;
 	}
@@ -68,6 +68,15 @@ Table& Table::operator=(Table &&table) {
 	return *this;
 }
 
+// Destructor
+Table::~Table()
+{
+	std::cout << "Destructor Table was called for table " << endl;
+	for (std::vector<Customer *>::const_iterator i = customersList.begin(); i != customersList.end(); ++i)
+		delete *i;
+	customersList.clear();
+	orderList.clear();
+}
 int Table::getCapacity() const
 {
 	return capacity;
@@ -78,28 +87,40 @@ void Table::addCustomer(Customer* customer)
 	if (!customer)
 		return;
 	// add the customer to the customerList
-	cout << "Adding " << customer->getName() << " to table, size of table " << this->customersList.size() << endl;
+	//cout << "Adding " << customer->getName() << " to table, size of table " << this->customersList.size() << endl;
 	this->customersList.push_back(customer);
-	cout << "size new " << this->customersList.size() << endl;
+	//cout << "size new " << this->customersList.size() << endl;
 }
 
 void Table::removeCustomer(int id) 
 {		
 	std::vector<OrderPair> tmp;
-	this->customersList.erase(customersList.begin() + id);
+	int customer_index_inside_customersList = -1;
+	// search for customer id in the customersList to remove
+	for (std::vector<Customer *>::const_iterator i = this->customersList.begin();
+		i != this->customersList.end();
+		++i)
+	{
+		customer_index_inside_customersList++;
+		if (id == (*i)->getId()) {
+			break;
+		}
+	}
 
-	cout << "printing the vector before removing dishes from customer " << id << endl;
+	this->customersList.erase(customersList.begin() + customer_index_inside_customersList);
+
+	/*cout << "printing the vector before removing dishes from customer " << id << endl;
 	for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i)
 	{
 		cout << "Customer " << (*i).first << " ordered " << (*i).second.getName() << endl;
-	}
+	}*/
 
 	// needs to remove the dishes that were orderd by customer id
 	for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i) 
 	{
 		if ((*i).first == id) 
 		{
-			cout << "found dish "<< (*i).second.getName() << " that was ordered by customer " << id << " in the orderList of the table, this dish will be removed from the table" << endl;
+			//cout << "found dish "<< (*i).second.getName() << " that was ordered by customer " << id << " in the orderList of the table, this dish will be removed from the table" << endl;
 			continue;
 		}
 		tmp.push_back(*i);
@@ -107,18 +128,31 @@ void Table::removeCustomer(int id)
 
 	this->orderList.clear();
 	this->orderList = tmp;
-	cout << "printing the vector after removing dishes from customer " << id << endl;
+	/*cout << "printing the vector after removing dishes from customer " << id << endl;
 	for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i)
 	{
 		cout << "Customer " << (*i).first << " ordered " << (*i).second.getName() << endl;
-	}
+	}*/
 }
 
 Customer* Table::getCustomer(int id)
 {
-	if ((id < 0) || (id >= this->getCapacity()))
+	Customer * customer_to_find = NULL;
+
+	if (id < 0)
 		return NULL;
-	return this->customersList.at(id);
+
+	// search for customer id in the customersList
+	for (std::vector<Customer *>::const_iterator i = this->customersList.begin();
+		i != this->customersList.end();
+		++i)
+	{
+		if (id == (*i)->getId()) {
+			customer_to_find = *i;
+			break;
+		}
+	}
+	return customer_to_find;
 }
 
 std::vector<Customer*>& Table::getCustomers()
@@ -145,7 +179,7 @@ void Table::order(const std::vector<Dish> &menu)
 		// Create pairs for all the dishes customer i ordered
 		for (std::vector<int>::const_iterator j = ordered_dishes_id.begin(); j != ordered_dishes_id.end(); ++j)
 		{
-			cout << "creating a pair <" << (*i)->getId() << "," << menu.at(*j).getName() << ">" << endl;
+			//cout << "creating a pair <" << (*i)->getId() << "," << menu.at(*j).getName() << ">" << endl;
 			pair <int, Dish> ordered_dish((*i)->getId(), menu.at(*j));/// here needs to fix the customer id
 			// push the pair to vector orderList
 			(this->getOrders()).push_back(ordered_dish);

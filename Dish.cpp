@@ -47,9 +47,3 @@ bool Dish::operator==(const Dish& dish) const
 		(this->getPrice() == dish.getPrice()) &&
 		(this->getType() == dish.getType()));
 }
-
-bool Dish::operator< (Dish& dish) const
-{
-	cout << "Test this->price= " << this->price << " < " << dish.getPrice() << " =dish.getPrice()" << endl;
-	return (this->price < dish.getPrice());
-}

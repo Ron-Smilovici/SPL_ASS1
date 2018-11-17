@@ -25,6 +25,7 @@ public:
 	Restaurant();
 	Restaurant(const std::string &configFilePath);
 	Restaurant(const Restaurant &restaurant); //copy constructor
+	~Restaurant(); //Destructor
 	void start();
 	int getNumOfTables() const; //
 	void setOpen(bool value);

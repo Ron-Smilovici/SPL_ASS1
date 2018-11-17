@@ -23,8 +23,6 @@ public:
 	int getPrice() const;
 	DishType getType() const;
 	bool operator==(const Dish& dish) const;
-	bool operator< (Dish& dish) const;
-
 	
 private:
 	const int id;

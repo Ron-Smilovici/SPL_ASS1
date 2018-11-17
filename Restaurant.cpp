@@ -54,7 +54,7 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0),
 			// Advance Dish id
 			dish_id++;
 		}
-		cout << "Finishing parsing configuration file" << endl;
+		//cout << "Finishing parsing configuration file" << endl;
 	}
 	else {
 		std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
@@ -65,9 +65,25 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0),
 Restaurant::Restaurant(const Restaurant &restaurant)
 {
 	open = restaurant.open;
-	for (int i = 0; i < restaurant.tables.size(); i++) {
+	for (int i = 0; i < static_cast<int>(restaurant.tables.size()); i++) {
 
 	}
+}
+
+// Destructor
+Restaurant::~Restaurant() 
+{
+	std::cout << "Destructor Restaurant was called" << endl;
+	for (std::vector<Table *>::const_iterator i = tables.begin(); i != tables.end(); ++i)
+		delete *i;
+	tables.clear();
+	menu.clear();
+
+	for (std::vector<BaseAction *>::const_iterator i = actionsLog.begin(); i != actionsLog.end(); ++i)
+		delete *i;
+	actionsLog.clear();
+	std::cout << "Destrcutor Restaurant finished" << endl;
+	system("pause");
 }
 
 void Restaurant::parsingTables(string tables_capacity) 
@@ -77,9 +93,10 @@ void Restaurant::parsingTables(string tables_capacity)
 
 	while (getline(ss, capacity, DELIMITER_COMMA))
 	{
-		Table * table = new Table(stoul(capacity));
 		// create a new table with certain capacity
-		cout << "create a NEW table with capacity " << stoul(capacity) << ", table is_open? " << table->isOpen() << endl;
+		Table * table = new Table(stoul(capacity));
+		
+		//std::cout << "create a NEW table with capacity " << stoul(capacity) << ", table is_open? " << table->isOpen() << endl;
 
 		// insert table to the vector of tables
 		tables.push_back(table);
@@ -134,22 +151,21 @@ void Restaurant::start()
 		switch (op_code)
 		{
 			case OPEN:
-				cout << "open command" << endl;
-
 				table_id = extract_table_id(argv);
 
 				/* If the table doesn't exist or is already open, this action should result in an error */
 				if (!is_table_id_valid(table_id) || is_table_open(table_id)) {
 		
 					cout << "Table does not exist or is already open" << endl;
-					cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					//cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
 					continue;
 				}
 
 				/* check the cpacity of the table */
-				if (argv.size() > (this->getTable(table_id))->getCapacity())
+				if (argv.size() > static_cast<int>((this->getTable(table_id))->getCapacity()))
 				{
-					cout << "requsted table for " << argv.size() << " persons. Table capacity = " << this->getTable(table_id)->getCapacity() << endl;
+					cout << "Table does not exist or is already open" << endl;
+					//cout << "requsted table for " << argv.size() << " persons. Table capacity = " << this->getTable(table_id)->getCapacity() << endl;
 					continue;
 				}
 
@@ -159,13 +175,12 @@ void Restaurant::start()
 				
 			break;
 			case ORDER:
-				cout << "order command" << endl;
 				table_id = extract_table_id(argv);
 
 				/* If the table doesn't exist or is closed, this action should result in an error */
 				if (!is_table_id_valid(table_id) || !is_table_open(table_id)) {
 					cout << "Table does not exist or is already open" << endl;
-					cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					//cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
 					continue;
 				}
 
@@ -178,12 +193,11 @@ void Restaurant::start()
 			break;
 			case MOVE:
 				int src_id, dst_id, customer_id;
-				cout << "move command" << endl;
 				//int src, int dst, int customerId
 				src_id = extract_table_id(argv);
 				dst_id = extract_table_id(argv);
 				customer_id = extract_table_id(argv);
-				cout << "src=" << src_id << ", dst=" << dst_id << ", customer_id=" << customer_id << endl;
+				//cout << "src=" << src_id << ", dst=" << dst_id << ", customer_id=" << customer_id << endl;
 				/* If the src table doesn't exist or is already closed and
 					If the dst table doesn't exist or is already closed this action should result in an error 
 					IF the customer ID doesn't exist in the src table id
@@ -192,36 +206,37 @@ void Restaurant::start()
 				if (!is_table_id_valid(src_id) || !is_table_open(src_id) ||
 					!is_table_id_valid(dst_id) || !is_table_open(dst_id) ||
 					!(this->getTable(src_id)->getCustomer(customer_id)) ||
-					this->getTable(dst_id)->getCapacity() <= this->getTable(dst_id)->getCustomers().size()) {
+					this->getTable(dst_id)->getCapacity() <= static_cast<int>(this->getTable(dst_id)->getCustomers().size())) {
 
 					cout << "Cannot move customer" << endl;
-					cout << "table id = " << src_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					/*cout << "table id = " << src_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					if (!(this->getTable(src_id)->getCustomer(customer_id)))
+						cout << "NULL" << endl;
+					cout << "this->getTable(dst_id)->getCapacity() = " << this->getTable(dst_id)->getCapacity() << endl;
+					cout << "this->getTable(dst_id)->getCustomers().size() = " << this->getTable(dst_id)->getCustomers().size() << endl;*/
 					continue;
 				}
 				
 				ba = new MoveCustomer(src_id, dst_id, customer_id);
 			break;
 			case CLOSEALL:
-				cout << "closeall command" << endl;
 				ba = new CloseAll();
 				finish = true;
 			break;
 			case CLOSE:
-				cout << "close command" << endl;
 				table_id = extract_table_id(argv);
 
 				/* If the table doesn't exist or is already closed, this action should result in an error */
 				if (!is_table_id_valid(table_id) || !is_table_open(table_id)) {
 					cout << "Table does not exist or is already open" << endl;
-					cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
-					cout << "table is_open?" << this->getTable(table_id)->isOpen() << endl;
+					//cout << "table id = " << table_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
+					//cout << "table is_open?" << this->getTable(table_id)->isOpen() << endl;
 					continue;
 				}
 
 				ba = new Close(table_id);
 				break;
 			case MENU:
-				cout << "menu commend" << endl;
 				ba = new PrintMenu();
 				break;
 			case STATUS:
@@ -229,7 +244,6 @@ void Restaurant::start()
 				ba = new PrintTableStatus(table_id);
 				break;
 			case BACKUP:
-				cout << "backup commend" << endl;
 				ba = new BackupRestaurant();
 				break;
 			default:
@@ -241,7 +255,7 @@ void Restaurant::start()
 
 		// log the action in the log
 		actionsLog.push_back(ba);
-		cout << endl;
+		//cout << endl;
 	}
 }
 
@@ -345,7 +359,7 @@ void Restaurant::create_customers(std::vector<string> argv, std::vector<Customer
 		getline(ss, customer_str_type, ',');
 		CustomerType customer_type = convert_to_customer(customer_str_type);
 
-		cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << " id " << res.get_customer_arrived_so_far() << endl;
+		//cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << " id " << res.get_customer_arrived_so_far() << endl;
 		switch (customer_type)
 		{
 		case veg:
