@@ -40,10 +40,10 @@ DishType Dish::getType() const
 	return this->type;
 }
 
-bool Dish::operator==(const Dish& dish) const 
+bool Dish::operator==(const Dish& dish) const
 {
 	return ((this->getId() == dish.getId()) &&
-		(this->getName() == dish.getName()) &&
-		(this->getPrice() == dish.getPrice()) &&
-		(this->getType() == dish.getType()));
+			(this->getName() == dish.getName()) &&
+			(this->getPrice() == dish.getPrice()) &&
+			(this->getType() == dish.getType()));
 }

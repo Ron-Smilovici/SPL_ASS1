@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 using namespace std;
 enum DishType {
 	VEG, SPC, BVG, ALC, ERROR_DISH

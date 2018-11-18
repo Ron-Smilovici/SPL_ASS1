@@ -3,16 +3,16 @@
 // TO BE DELETED!
 void print_vector(std::vector<Table*> vec_tables)
 {
-	cout << "Printing Vector" << endl;
-	for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-		cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
+    cout << "Printing Vector" << endl;
+    for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
+        cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
 }
 
 void print_vector_string(std::vector<string> vec_tables)
 {
-	cout << "Printing Vector" << endl;
-	for (std::vector<string>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-		cout << *i << endl;
+    cout << "Printing Vector" << endl;
+    for (std::vector<string>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
+        cout << *i << endl;
 }
 
 //////////////
@@ -22,67 +22,67 @@ Restaurant::Restaurant() {}
 //parameterized constructor
 Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0), customer_arrived_so_far(0)
 {
-	bool r_num_of_tables_complete = false;
-	bool r_tables_complete = false;
-	bool r_menu_complete = false;
-	ifstream input_file(configFilePath);
-	int dish_id = 0;
+    bool r_num_of_tables_complete = false;
+    bool r_tables_complete = false;
+    bool r_menu_complete = false;
+    ifstream input_file(configFilePath);
+    int dish_id = 0;
 
-	if (input_file.is_open()) 
-	{
-		string line;
-		while (getline(input_file, line)) 
-		{
-			/* ignore line starts with '#' or empty line */
-			if (line[0] == '#' || line.empty())
-				continue;
+    if (input_file.is_open())
+    {
+        string line;
+        while (getline(input_file, line))
+        {
+            /* ignore line starts with '#' or empty line */
+            if (line[0] == '#' || line.empty())
+                continue;
 
-			if (!r_num_of_tables_complete) {
-				number_of_tables = stoul(line);
-				r_num_of_tables_complete = true;
-				continue;
-			}
+            if (!r_num_of_tables_complete) {
+                number_of_tables = stoul(line);
+                r_num_of_tables_complete = true;
+                continue;
+            }
 
-			if (!r_tables_complete) {
-				parsingTables(line);
-				r_tables_complete = true;
-				continue;
-			}
+            if (!r_tables_complete) {
+                parsingTables(line);
+                r_tables_complete = true;
+                continue;
+            }
 
-			parsingDishes(line, dish_id);
+            parsingDishes(line, dish_id);
 
-			// Advance Dish id
-			dish_id++;
-		}
-		//cout << "Finishing parsing configuration file" << endl;
-	}
-	else {
-		std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
-	}
+            // Advance Dish id
+            dish_id++;
+        }
+        //cout << "Finishing parsing configuration file" << endl;
+    }
+    else {
+        std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
+    }
 }
 
 //copy constructor (alon)
 Restaurant::Restaurant(const Restaurant &restaurant)
 {
-	open = restaurant.open;
+    open = restaurant.open;
 
-	for (int i = 0; i < restaurant.tables.size(); i++) {
-	    Table* table = new Table(*restaurant.tables.at(i));
+    for (int i = 0; i < restaurant.tables.size(); i++) {
+        Table* table = new Table(*restaurant.tables.at(i));
         tables.push_back(table);
-	}
+    }
 
-	for (int i = 0; i < restaurant.menu.size(); i++) {
-	    menu.push_back(restaurant.menu.at(i));
-	}
+    for (int i = 0; i < restaurant.menu.size(); i++) {
+        menu.push_back(restaurant.menu.at(i));
+    }
 
-	// implementation of Actions log should be here.
+    // implementation of Actions log should be here.
     for (int i =0; i < restaurant.actionsLog.size(); i++) {
         BaseAction* temp = restaurant.actionsLog.at(i);
         BaseAction* cloned = temp->clone();
         actionsLog.push_back(cloned);
     }
 
-	number_of_tables = restaurant.number_of_tables;
+    number_of_tables = restaurant.number_of_tables;
 }
 
 // Destructor
@@ -218,67 +218,67 @@ void Restaurant::parsingTables(string tables_capacity)
 
 void Restaurant::parsingDishes(string dish_information, int dish_id)
 {
-	string name, type, price;
-	stringstream ss(dish_information);
+    string name, type, price;
+    stringstream ss(dish_information);
 
-	getline(ss, name, DELIMITER_COMMA);
-	getline(ss, type, DELIMITER_COMMA);
-	getline(ss, price, DELIMITER_COMMA);
+    getline(ss, name, DELIMITER_COMMA);
+    getline(ss, type, DELIMITER_COMMA);
+    getline(ss, price, DELIMITER_COMMA);
 
-	// Create a Dish
-	Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
+    // Create a Dish
+    Dish dish(dish_id, name, stoul(price), convert_to_dish(type));
 
-	// Add the Dish to the menu vector
-	menu.push_back(dish);
-	//cout << "name = " << name << " type= " << type << " price = " << price << endl;
+    // Add the Dish to the menu vector
+    menu.push_back(dish);
+    //cout << "name = " << name << " type= " << type << " price = " << price << endl;
 }
 
 void Restaurant::start()
 {
-	static string rname = "Restaurant::start ";
-	bool finish = false;
-	string user_input;
-	Actions op_code;
-	int table_id;
-	BaseAction * ba = NULL;
+    static string rname = "Restaurant::start ";
+    bool finish = false;
+    string user_input;
+    Actions op_code;
+    int table_id;
+    BaseAction * ba = NULL;
 
-	// open the restaurant
-	open = true;
-	std::cout << "Restaurant is now open!" << std::endl;
+    // open the restaurant
+    open = true;
+    std::cout << "Restaurant is now open!" << std::endl;
 
-	while (!finish && getline(cin, user_input)) {
-		vector<string> argv;
-		vector<Customer *> vec_customers;
+    while (!finish && getline(cin, user_input)) {
+        vector<string> argv;
+        vector<Customer *> vec_customers;
 
-		//cout << "for test: user_input= " << user_input << endl;
+        //cout << "for test: user_input= " << user_input << endl;
 
-		// Split user command to words in vector
-		split_str2vec(&argv, user_input);
+        // Split user command to words in vector
+        split_str2vec(&argv, user_input);
 
-		//print_vector_string(argv); // for test
-		op_code = convert_to_action(argv.at(0));
+        //print_vector_string(argv); // for test
+        op_code = convert_to_action(argv.at(0));
 
-		// Delete the op_code element from vector argv[0]
-		erase_op_code(argv);
+        // Delete the op_code element from vector argv[0]
+        erase_op_code(argv);
 
-		switch (op_code)
-		{
-			case OPEN:
+        switch (op_code)
+        {
+            case OPEN:
 
-				table_id = extract_table_id(argv);
+                table_id = extract_table_id(argv);
                 // fill customer vector
                 create_customers(argv, vec_customers, *this);
                 ba = new OpenTable(table_id, vec_customers);
 
-				/* If the table doesn't exist or is already open, this action should result in an error */
-				if (!is_table_id_valid(table_id) || is_table_open(table_id)) {
+                /* If the table doesn't exist or is already open, this action should result in an error */
+                if (!is_table_id_valid(table_id) || is_table_open(table_id)) {
                     ba->activate_error("Table does not exist or is already open");
                     actionsLog.push_back(ba);
-					continue;
-				}
+                    continue;
+                }
 
-				/* check the cpacity of the table */
-				if (argv.size() > static_cast<int>((this->getTable(table_id))->getCapacity()))
+                /* check the cpacity of the table */
+                if (argv.size() > static_cast<int>((this->getTable(table_id))->getCapacity()))
                 {
                     ba->activate_error("Table does not exist or is already open");
                     actionsLog.push_back(ba);
@@ -343,55 +343,55 @@ void Restaurant::start()
                 //finish = true;
                 //break;
 
-			case CLOSE:
-				table_id = extract_table_id(argv);
+            case CLOSE:
+                table_id = extract_table_id(argv);
                 ba = new Close(table_id);
-				/* If the table doesn't exist or is already closed, this action should result in an error */
-				if (!is_table_id_valid(table_id) || !is_table_open(table_id)) {
+                /* If the table doesn't exist or is already closed, this action should result in an error */
+                if (!is_table_id_valid(table_id) || !is_table_open(table_id)) {
                     ba->activate_error("Table does not exist or is already open");
                     actionsLog.push_back(ba);
-					continue;
-				}
+                    continue;
+                }
 
-				break;
+                break;
 
-			case MENU:
-				ba = new PrintMenu();
-				break;
+            case MENU:
+                ba = new PrintMenu();
+                break;
 
             case STATUS:
                 table_id = extract_table_id(argv);
                 ba = new PrintTableStatus(table_id);
                 break;
 
-			case LOG:
-				ba = new PrintActionsLog();
-				break;
+            case LOG:
+                ba = new PrintActionsLog();
+                break;
 
-			case BACKUP:
-				ba = new BackupRestaurant();
-				break;
+            case BACKUP:
+                ba = new BackupRestaurant();
+                break;
 
-			case RESTORE:
-				ba = new RestoreResturant();
-				break;
+            case RESTORE:
+                ba = new RestoreResturant();
+                break;
 
-			default:
-				break;
-		}
+            default:
+                break;
+        }
 
-		ba->act(*this);
+        ba->act(*this);
 
 
-		// log the action in the log
-		actionsLog.push_back(ba);
-	}
+        // log the action in the log
+        actionsLog.push_back(ba);
+    }
 }
 
 int Restaurant::getNumOfTables() const
 {
-	//return tables.size();
-	return number_of_tables;
+    //return tables.size();
+    return number_of_tables;
 }
 
 Table* Restaurant::getTable(int ind)
@@ -401,18 +401,18 @@ Table* Restaurant::getTable(int ind)
 
 void Restaurant::setOpen(bool value)
 {
-	this->open = value;
+    this->open = value;
 }
 
 // Return a reference to the history of actions
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const
 {
-	return actionsLog;
+    return actionsLog;
 }
 
-std::vector<Dish>& Restaurant::getMenu() 
+std::vector<Dish>& Restaurant::getMenu()
 {
-	return this->menu;
+    return this->menu;
 }
 
 void Restaurant::set_customer_arrived_so_far(int number_of_customers)
@@ -425,94 +425,94 @@ int Restaurant::get_customer_arrived_so_far() { return this->customer_arrived_so
 /* Added methods */
 DishType Restaurant::convert_to_dish(const std::string& str)
 {
-	if (str == "VEG") return VEG;
-	else if (str == "SPC") return SPC;
-	else if (str == "BVG") return BVG;
-	else if (str == "ALC") return ALC;
-	else return ERROR_DISH;
+    if (str == "VEG") return VEG;
+    else if (str == "SPC") return SPC;
+    else if (str == "BVG") return BVG;
+    else if (str == "ALC") return ALC;
+    else return ERROR_DISH;
 }
 
 Actions Restaurant::convert_to_action(const std::string& str)
 {
-	//OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
-	if (str == "open") return OPEN;
-	else if (str == "order") return ORDER;
-	else if (str == "move") return MOVE;
-	else if (str == "close") return CLOSE;
-	else if (str == "closeall") return CLOSEALL;
+    //OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE
+    if (str == "open") return OPEN;
+    else if (str == "order") return ORDER;
+    else if (str == "move") return MOVE;
+    else if (str == "close") return CLOSE;
+    else if (str == "closeall") return CLOSEALL;
     else if (str == "status") return STATUS;
-	else if (str == "backup") return BACKUP;
+    else if (str == "backup") return BACKUP;
     else if (str == "menu") return MENU;
     else if (str == "restore") return RESTORE;
     else if (str == "log") return LOG;
 
-	else return ERROR_ACTION;
+    else return ERROR_ACTION;
 
 }
 
 CustomerType Restaurant::convert_to_customer(const std::string& str)
 {
-	if (str == "veg") return veg;
-	else if (str == "chp") return chp;
-	else if (str == "spc") return spc;
-	else if (str == "alc") return alc;
-	else return err;
+    if (str == "veg") return veg;
+    else if (str == "chp") return chp;
+    else if (str == "spc") return spc;
+    else if (str == "alc") return alc;
+    else return err;
 }
 
 void Restaurant::split_str2vec (std::vector<string> * vec_str, std::string str)
 {
-	std::string token;
-	std::istringstream ss(str);
-	while (std::getline(ss, token, ' ')) {
-		vec_str->push_back(token);
-	}
+    std::string token;
+    std::istringstream ss(str);
+    while (std::getline(ss, token, ' ')) {
+        vec_str->push_back(token);
+    }
 }
 
 /* Open Action */
 void Restaurant::erase_op_code(std::vector<string> & vec)
 {
-	vec.erase(vec.begin() + 0); 
+    vec.erase(vec.begin() + 0);
 }
 
 int Restaurant::extract_table_id(std::vector<string> & vec)
 {
-	int id = stoi(vec.at(0), nullptr, 10);
-	vec.erase(vec.begin() + 0);
-	return id;
+    int id = stoi(vec.at(0), nullptr, 10);
+    vec.erase(vec.begin() + 0);
+    return id;
 }
 
 void Restaurant::create_customers(std::vector<string> argv, std::vector<Customer *> & vec_customers, Restaurant & res)
 {
-	Customer * customer;
-	std::string customer_name, customer_str_type;
+    Customer * customer;
+    std::string customer_name, customer_str_type;
 
-	for (std::vector<string>::const_iterator i = argv.begin(); i != argv.end(); ++i) {
-		stringstream ss(*i);
+    for (std::vector<string>::const_iterator i = argv.begin(); i != argv.end(); ++i) {
+        stringstream ss(*i);
 
-		getline(ss, customer_name, ',');
-		getline(ss, customer_str_type, ',');
-		CustomerType customer_type = convert_to_customer(customer_str_type);
+        getline(ss, customer_name, ',');
+        getline(ss, customer_str_type, ',');
+        CustomerType customer_type = convert_to_customer(customer_str_type);
 
-		//cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << endl;
-		switch (customer_type)
-		{
-		case veg:
-			customer = new VegetarianCustomer(customer_name, res.get_customer_arrived_so_far());
-			break;
-		case chp:
-			customer = new CheapCustomer(customer_name, res.get_customer_arrived_so_far());
-			break;
-		case spc:
-			customer = new SpicyCustomer(customer_name, res.get_customer_arrived_so_far());
-			break;
-		case alc:
-			customer = new AlchoholicCustomer(customer_name, res.get_customer_arrived_so_far());
+        //cout << "Create NEW customer: name = " << customer_name << " type = " << customer_type << endl;
+        switch (customer_type)
+        {
+            case veg:
+                customer = new VegetarianCustomer(customer_name, res.get_customer_arrived_so_far());
+                break;
+            case chp:
+                customer = new CheapCustomer(customer_name, res.get_customer_arrived_so_far());
+                break;
+            case spc:
+                customer = new SpicyCustomer(customer_name, res.get_customer_arrived_so_far());
+                break;
+            case alc:
+                customer = new AlchoholicCustomer(customer_name, res.get_customer_arrived_so_far());
 
-			break;
-		}
-		vec_customers.push_back(customer);
+                break;
+        }
+        vec_customers.push_back(customer);
         res.set_customer_arrived_so_far(res.get_customer_arrived_so_far() + 1);
-	}
+    }
 }
 
 
