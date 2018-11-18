@@ -37,7 +37,8 @@ ostream& BaseAction::operator<<(ostream& out)
 {
 	return out << this->toString();
 }
-//error function (alon)
+
+//error function
 void BaseAction::error(std::string errorMsg) {
 	status = ERROR;
 	this->errorMsg = errorMsg;
@@ -53,19 +54,21 @@ void BaseAction::complete()
 {
 	this->status = COMPLETED;
 }
-// OpenTable action (alon)
+
+// OpenTable action
 OpenTable::OpenTable(int id, std::vector<Customer *> &customersList) : tableId(id), BaseAction()
 {
-	for (int i = 0; i < customersList.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(customersList.size()); ++i) {
 		Customer* temp = customersList.at(i);
 		Customer* cloned = temp->clone();
 		customers.push_back(cloned);
 	}
 }
-//copy constructor (alon)
+
+//copy constructor
 OpenTable::OpenTable(const OpenTable &openTable) : tableId(openTable.tableId), BaseAction(openTable)
 {
-	for (int i = 0; i < openTable.customers.size(); ++i) {
+	for (int i = 0; i < static_cast<int>(openTable.customers.size()); ++i) {
 		Customer* temp = openTable.customers.at(i);
 		Customer* cloned = temp->clone();
 		customers.push_back(cloned);
@@ -100,7 +103,7 @@ void OpenTable::act(Restaurant &restaurant)
 std::string OpenTable::toString() const
 {
 	std::string str = "open " + std::to_string(this->tableId) + " ";
-	for(int i = 0; i < this->customers.size(); i++){
+	for(int i = 0; i < static_cast<int>(this->customers.size()); i++){
 		str.append(customers.at(i)->toString());
 	}
 
@@ -109,9 +112,8 @@ std::string OpenTable::toString() const
 	return str;
 }
 
-BaseAction* OpenTable::clone() //by alon
+BaseAction* OpenTable::clone()
 {
-
 	return new OpenTable(*this);
 }
 
@@ -148,10 +150,6 @@ MoveCustomer::MoveCustomer(int src, int dst, int customerId) : BaseAction(), src
 MoveCustomer::MoveCustomer(const MoveCustomer &moveCustomer) : BaseAction(moveCustomer),
 															   srcTable(moveCustomer.srcTable), dstTable(moveCustomer.dstTable), id(moveCustomer.id) {}
 
-/*Moves a customer from one table to another. Also moves all orders
-made by this customer from the bill of the origin table to the bill of the destination table.
-If the origin table has no customers left after this move, the program will close the origin
-table. */
 void MoveCustomer::act(Restaurant &restaurant)
 {
 	Customer * customter_to_move;
@@ -182,7 +180,7 @@ std::string MoveCustomer::toString() const
 	return "move " + to_string(srcTable) + " " + to_string(dstTable) + " " + to_string(id) + " " + status_to_string();
 }
 
-BaseAction* MoveCustomer::clone() //by alon
+BaseAction* MoveCustomer::clone()
 {
 	return new MoveCustomer(*this);
 }
@@ -190,7 +188,7 @@ BaseAction* MoveCustomer::clone() //by alon
 
 // Close action
 Close::Close(int id) : BaseAction(), tableId(id) {}
-//copy constructor (alon)
+//copy constructor
 Close::Close(const Close &close) : tableId(close.tableId), BaseAction(close)
 {
 	bill = close.bill;
@@ -223,7 +221,7 @@ std::string Close::toString() const
 	return "close " + std::to_string(this->tableId) + " " + status_to_string() ;
 }
 
-BaseAction* Close::clone() //by alon
+BaseAction* Close::clone()
 {
 	return new Close(*this);
 }
@@ -231,7 +229,7 @@ BaseAction* Close::clone() //by alon
 
 //CloseAll action
 CloseAll::CloseAll() : BaseAction() {}
-//copy constructor (alon)
+//copy constructor
 CloseAll::CloseAll(const CloseAll &closeAll) : BaseAction(closeAll) {}
 
 void CloseAll::act(Restaurant &restaurant)
@@ -256,7 +254,7 @@ std::string CloseAll::toString() const
 {
 	return table_bills.str();
 }
-BaseAction* CloseAll::clone() //by alon
+BaseAction* CloseAll::clone()
 {
 	return new CloseAll(*this);
 }
@@ -264,26 +262,25 @@ BaseAction* CloseAll::clone() //by alon
 
 // PrintMenu action
 PrintMenu::PrintMenu() : BaseAction() {}
-//copy constructor (alon)
+//copy constructor
 PrintMenu::PrintMenu(const PrintMenu &printMenu) : BaseAction(printMenu) {}
 
 void PrintMenu::act(Restaurant &restaurant)
 {
 	vector<Dish> vDish;
 	vDish = restaurant.getMenu();
-	//std::cout << "This is act by PrintMenu dervied class " << std::endl;
-	for (int i = 0; i < vDish.size(); i++)  // printing.
+
+	for (int i = 0; i < static_cast<int>(vDish.size()); i++)
 	{
 		cout << vDish.at(i).getName() << " " << convert_to_dishtype(vDish.at(i).getType())
 			 << " " << vDish.at(i).getPrice() << "NIS" << endl;
 	}
-	//system("pause");
 	this->complete();
 }
 
 std::string PrintMenu::toString() const { return "menu " + this->status_to_string(); }
 
-BaseAction* PrintMenu::clone() //by alon
+BaseAction* PrintMenu::clone()
 {
 	return new PrintMenu(*this);
 }
@@ -291,7 +288,7 @@ BaseAction* PrintMenu::clone() //by alon
 
 //PrintTableStatus action
 PrintTableStatus::PrintTableStatus(int id) : BaseAction(), tableId(id) {}
-//copy constructor (alon)
+//copy constructor
 PrintTableStatus::PrintTableStatus(const PrintTableStatus &printTableStatus) : BaseAction(printTableStatus), tableId(printTableStatus.tableId)
 {
 	open = printTableStatus.open;
@@ -304,7 +301,7 @@ void PrintTableStatus::act(Restaurant &restaurant)
 {
 	Table * curr_table;
 	std::stringstream customer_string, dishes_string;
-
+	std::stringstream sstr;
 	curr_table = restaurant.getTable(tableId);
 	if (curr_table->isOpen())
 	{
@@ -328,16 +325,18 @@ void PrintTableStatus::act(Restaurant &restaurant)
 		open = "closed";
 	}
 
-	std::stringstream sstr;
+	
 	sstr << "Table " << tableId << " status: " << open << endl;
 	if (open == "open") {
 		sstr << "Customers:" << endl;
 		sstr << customers;
 		sstr << "Orders:" << endl;
-		sstr << dishes << endl;
-		sstr << "Current Bill: " << bill << "NIS" << endl;
+		sstr << dishes;
+		sstr << "Current Bill: " << bill << "NIS";
+		cout << sstr.str() << endl;
 	}
-	cout << sstr.str() << endl;
+	else
+		cout << sstr.str();
 
 	this->complete();
 }
@@ -360,7 +359,7 @@ PrintActionsLog::PrintActionsLog(const PrintActionsLog &printActionsLog) : BaseA
 
 void PrintActionsLog::act(Restaurant &restaurant)
 {
-	for(int i =0; i < restaurant.getActionsLog().size(); i++){
+	for(int i =0; i < static_cast<int>(restaurant.getActionsLog().size()); i++){
 		cout << restaurant.getActionsLog().at(i)->toString() << endl;
 	}
 
@@ -377,7 +376,7 @@ BaseAction* PrintActionsLog::clone()
 
 //BackupRestaurant action
 BackupRestaurant::BackupRestaurant() : BaseAction() {}
-//copy constructor (alon)
+//copy constructor 
 BackupRestaurant::BackupRestaurant(const BackupRestaurant &backupRestaurant) : BaseAction(backupRestaurant) {}
 
 void BackupRestaurant::act(Restaurant &restaurant)
@@ -403,7 +402,7 @@ BaseAction* BackupRestaurant::clone()
 
 //RestoreResturant action
 RestoreResturant::RestoreResturant() : BaseAction() {}
-//copy constructor (alon)
+//copy constructor 
 RestoreResturant::RestoreResturant(const RestoreResturant &restoreResturant) : BaseAction(restoreResturant) {}
 
 void RestoreResturant::act(Restaurant &restaurant)

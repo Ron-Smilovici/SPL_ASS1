@@ -87,10 +87,8 @@ void Table::addCustomer(Customer* customer)
     if (!customer)
         return;
     // add the customer to the customerList
-    //cout << "Adding " << customer->getName() << " to table, size of table " << this->customersList.size() << endl;
     Customer * customerTemp = customer->clone();
     this->customersList.push_back(customerTemp);
-    //cout << "size new " << this->customersList.size() << endl;
 }
 
 void Table::removeCustomer(int id)
@@ -110,18 +108,11 @@ void Table::removeCustomer(int id)
 
     this->customersList.erase(customersList.begin() + customer_index_inside_customersList);
 
-    /*cout << "printing the vector before removing dishes from customer " << id << endl;
-    for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i)
-    {
-        cout << "Customer " << (*i).first << " ordered " << (*i).second.getName() << endl;
-    }*/
-
     // needs to remove the dishes that were orderd by customer id
     for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i)
     {
         if ((*i).first == id)
         {
-            //cout << "found dish "<< (*i).second.getName() << " that was ordered by customer " << id << " in the orderList of the table, this dish will be removed from the table" << endl;
             continue;
         }
         tmp.push_back(*i);
@@ -129,11 +120,6 @@ void Table::removeCustomer(int id)
 
     this->orderList.clear();
     this->orderList = tmp;
-    /*cout << "printing the vector after removing dishes from customer " << id << endl;
-    for (std::vector<OrderPair>::const_iterator i = orderList.begin(); i != orderList.end(); ++i)
-    {
-        cout << "Customer " << (*i).first << " ordered " << (*i).second.getName() << endl;
-    }*/
 }
 
 Customer* Table::getCustomer(int id)
@@ -180,7 +166,6 @@ void Table::order(const std::vector<Dish> &menu)
         // Create pairs for all the dishes customer i ordered
         for (std::vector<int>::const_iterator j = ordered_dishes_id.begin(); j != ordered_dishes_id.end(); ++j)
         {
-            //cout << "creating a pair <" << (*i)->getId() << "," << menu.at(*j).getName() << ">" << endl;
             pair <int, Dish> ordered_dish((*i)->getId(), menu.at(*j));/// here needs to fix the customer id
             // push the pair to vector orderList
             (this->getOrders()).push_back(ordered_dish);

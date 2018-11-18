@@ -1,22 +1,5 @@
 #include "Restaurant.h"
 
-// TO BE DELETED!
-void print_vector(std::vector<Table*> vec_tables)
-{
-    cout << "Printing Vector" << endl;
-    for (std::vector<Table*>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-        cout << (*i)->getCapacity() << endl;  // (*i) meanning the first element inside the vector.
-}
-
-void print_vector_string(std::vector<string> vec_tables)
-{
-    cout << "Printing Vector" << endl;
-    for (std::vector<string>::const_iterator i = vec_tables.begin(); i != vec_tables.end(); ++i)
-        cout << *i << endl;
-}
-
-//////////////
-
 //default constructor
 Restaurant::Restaurant() {}
 //parameterized constructor
@@ -54,29 +37,27 @@ Restaurant::Restaurant(const std::string &configFilePath) : number_of_tables(0),
             // Advance Dish id
             dish_id++;
         }
-        //cout << "Finishing parsing configuration file" << endl;
     }
     else {
         std::cerr << "Couldn't open config file " << configFilePath << " for reading.\n";
     }
 }
 
-//copy constructor (alon)
+//copy constructor
 Restaurant::Restaurant(const Restaurant &restaurant)
 {
     open = restaurant.open;
 
-    for (int i = 0; i < restaurant.tables.size(); i++) {
+    for (int i = 0; i < static_cast<int>(restaurant.tables.size()); i++) {
         Table* table = new Table(*restaurant.tables.at(i));
         tables.push_back(table);
     }
 
-    for (int i = 0; i < restaurant.menu.size(); i++) {
+    for (int i = 0; i < static_cast<int>(restaurant.menu.size()); i++) {
         menu.push_back(restaurant.menu.at(i));
     }
 
-    // implementation of Actions log should be here.
-    for (int i =0; i < restaurant.actionsLog.size(); i++) {
+    for (int i =0; i < static_cast<int>(restaurant.actionsLog.size()); i++) {
         BaseAction* temp = restaurant.actionsLog.at(i);
         BaseAction* cloned = temp->clone();
         actionsLog.push_back(cloned);
@@ -98,7 +79,7 @@ Restaurant::~Restaurant()
     actionsLog.clear();
 }
 
-//copy assignment operator (alon)
+//copy assignment operator
 Restaurant& Restaurant::operator=(const Restaurant & restaurant) {
 
     // initialization of all members
@@ -115,7 +96,6 @@ Restaurant& Restaurant::operator=(const Restaurant & restaurant) {
     actionsLog.clear();
 
     // setting values
-
     open = restaurant.open;
 
     for(Table* ptable : restaurant.tables){
@@ -137,21 +117,21 @@ Restaurant& Restaurant::operator=(const Restaurant & restaurant) {
     return *this;
 }
 
-//move constructor (alon)
+//move constructor
 Restaurant::Restaurant(Restaurant &&restaurant)
 {
     open = restaurant.open;
 
-    for(int i = 0; i < restaurant.tables.size(); i++) {
+    for(int i = 0; i < static_cast<int>(restaurant.tables.size()); i++) {
         tables.push_back(restaurant.tables.at(i));
         restaurant.tables.at(i) = nullptr;
     }
 
-    for (int i = 0; i < restaurant.menu.size(); i++) {
+    for (int i = 0; i < static_cast<int>(restaurant.menu.size()); i++) {
         menu.push_back(restaurant.menu.at(i));
     }
 
-    for (int i = 0; i < restaurant.actionsLog.size(); i++){
+    for (int i = 0; i < static_cast<int>(restaurant.actionsLog.size()); i++){
         actionsLog.push_back(restaurant.actionsLog.at(i));
         restaurant.actionsLog.at(i) = nullptr;
     }
@@ -179,16 +159,16 @@ Restaurant& Restaurant::operator=(Restaurant &&restaurant) {
 
     open = restaurant.open;
 
-    for(int i = 0; i < restaurant.tables.size(); i++) {
+    for(int i = 0; i < static_cast<int>(restaurant.tables.size()); i++) {
         tables.push_back(restaurant.tables.at(i));
         restaurant.tables.at(i) = nullptr;
     }
 
-    for (int i = 0; i < restaurant.menu.size(); i++) {
+    for (int i = 0; i < static_cast<int>(restaurant.menu.size()); i++) {
         menu.push_back(restaurant.menu.at(i));
     }
 
-    for (int i = 0; i < restaurant.actionsLog.size(); i++){
+    for (int i = 0; i < static_cast<int>(restaurant.actionsLog.size()); i++){
         actionsLog.push_back(restaurant.actionsLog.at(i));
         restaurant.actionsLog.at(i) = nullptr;
     }
@@ -209,8 +189,6 @@ void Restaurant::parsingTables(string tables_capacity)
         // create a new table with certain capacity
         Table * table = new Table(stoul(capacity));
 
-        //std::cout << "create a NEW table with capacity " << stoul(capacity) << ", table is_open? " << table->isOpen() << endl;
-
         // insert table to the vector of tables
         tables.push_back(table);
     }
@@ -230,7 +208,6 @@ void Restaurant::parsingDishes(string dish_information, int dish_id)
 
     // Add the Dish to the menu vector
     menu.push_back(dish);
-    //cout << "name = " << name << " type= " << type << " price = " << price << endl;
 }
 
 void Restaurant::start()
@@ -249,8 +226,6 @@ void Restaurant::start()
     while (!finish && getline(cin, user_input)) {
         vector<string> argv;
         vector<Customer *> vec_customers;
-
-        //cout << "for test: user_input= " << user_input << endl;
 
         // Split user command to words in vector
         split_str2vec(&argv, user_input);
@@ -278,13 +253,12 @@ void Restaurant::start()
                 }
 
                 /* check the cpacity of the table */
-                if (argv.size() > static_cast<int>((this->getTable(table_id))->getCapacity()))
+                if (static_cast<int>(argv.size()) > (this->getTable(table_id)->getCapacity()))
                 {
                     ba->activate_error("Table does not exist or is already open");
                     actionsLog.push_back(ba);
                     continue;
                 }
-
 
                 break;
 
@@ -309,14 +283,10 @@ void Restaurant::start()
 
             case MOVE:
                 int src_id, dst_id, customer_id;
-                //int src, int dst, int customerId
                 src_id = extract_table_id(argv);
                 dst_id = extract_table_id(argv);
                 customer_id = extract_table_id(argv);
-                /* If the src table doesn't exist or is already closed and
-                    If the dst table doesn't exist or is already closed this action should result in an error
-                    IF the customer ID doesn't exist in the src table id
-                    If the destination table has no available seats for additional customers */
+
                 ba = new MoveCustomer(src_id, dst_id, customer_id);
                 if (!is_table_id_valid(src_id) || !is_table_open(src_id) ||
                     !is_table_id_valid(dst_id) || !is_table_open(dst_id) ||
@@ -325,23 +295,16 @@ void Restaurant::start()
 
                     ba->activate_error("Cannot move customer");
                     actionsLog.push_back(ba);
-                    /*cout << "table id = " << src_id << " restaurant number of tables = " << this->getNumOfTables() << endl;
-					if (!(this->getTable(src_id)->getCustomer(customer_id)))
-						cout << "NULL" << endl;
-					cout << "this->getTable(dst_id)->getCapacity() = " << this->getTable(dst_id)->getCapacity() << endl;
-					cout << "this->getTable(dst_id)->getCustomers().size() = " << this->getTable(dst_id)->getCustomers().size() << endl;*/
                     continue;
                 }
 
                 break;
 
             case CLOSEALL:
-
                 ba = new CloseAll();
                 ba->act(*this);
-                return;
-                //finish = true;
-                //break;
+                finish = true;
+                break;
 
             case CLOSE:
                 table_id = extract_table_id(argv);
@@ -390,7 +353,6 @@ void Restaurant::start()
 
 int Restaurant::getNumOfTables() const
 {
-    //return tables.size();
     return number_of_tables;
 }
 
@@ -514,6 +476,3 @@ void Restaurant::create_customers(std::vector<string> argv, std::vector<Customer
         res.set_customer_arrived_so_far(res.get_customer_arrived_so_far() + 1);
     }
 }
-
-
-/* Other Actions */
