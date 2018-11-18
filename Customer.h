@@ -27,6 +27,7 @@ public:
 	Customer(Customer &&customer); //move constructor
 	Customer& operator=(const Customer & customer); //copy assignment operator
 	Customer& operator=(Customer && customer); //move assignment operator
+    virtual ~Customer(); //Destructor
 	virtual Customer* clone() = 0; // create a dynamic copy of the specific child customer
 	virtual std::vector<int> order(const std::vector<Dish> &menu) = 0; // Derived class has to implement this
 	virtual std::string toString() const = 0; // Derived class has to implement this
@@ -76,6 +77,7 @@ public:
 	std::vector<int> order(const std::vector<Dish> &menu);
 	std::string toString() const;
 	Customer* clone(); // create a dynamic copy of the specific child customer
+    ~AlchoholicCustomer(); //Destructor
 private:
 	std::vector<Dish> OrderedAlcDishes;
 };

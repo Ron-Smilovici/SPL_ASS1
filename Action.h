@@ -28,10 +28,19 @@ class Restaurant;
 class BaseAction {
 public:
 	BaseAction();
+    BaseAction(const BaseAction &action);//copy constructor
+//    BaseAction(BaseAction &&action);//move constructor
+//    BaseAction& operator=(const BaseAction & action); //copy assignment operator
+//    BaseAction& operator=(BaseAction && action);//move assignment operator
+	virtual ~BaseAction();
+    virtual BaseAction* clone() = 0; // create a dynamic copy of the specific child action
 	ActionStatus getStatus() const;
 	virtual void act(Restaurant& restaurant) = 0;
 	virtual std::string toString() const = 0;
 	ostream& operator<<(ostream& out);
+    std::string convert_to_dishtype(int num);
+    std::string status_to_string() const ;
+    void activate_error(std::string errorMsg);
 protected:
 	void complete();
 	void error(std::string errorMsg);
@@ -44,9 +53,12 @@ private:
 
 class OpenTable : public BaseAction {
 public:
+	~OpenTable();
 	OpenTable(int id, std::vector<Customer *> &customersList);
+	OpenTable(const OpenTable &openTable);//copy constructor (alon)
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 	const int tableId;
 	std::vector<Customer *> customers;
@@ -56,8 +68,10 @@ private:
 class Order : public BaseAction {
 public:
 	Order(int id);
+    Order(const Order &order);//copy constructor
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 	const int tableId;
 };
@@ -66,8 +80,10 @@ private:
 class MoveCustomer : public BaseAction {
 public:
 	MoveCustomer(int src, int dst, int customerId);
+	MoveCustomer(const MoveCustomer &moveCustomer);
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 	const int srcTable;
 	const int dstTable;
@@ -78,8 +94,10 @@ private:
 class Close : public BaseAction {
 public:
 	Close(int id);
+	Close(const Close &close);//copy constructor
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 	const int tableId;
 	int bill;
@@ -89,17 +107,22 @@ private:
 class CloseAll : public BaseAction {
 public:
 	CloseAll();
-	void act(Restaurant &restaurant);
+    CloseAll(const CloseAll &closeAll);//copy constructor
+    void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
+    std::stringstream table_bills;
 };
 
 
 class PrintMenu : public BaseAction {
 public:
 	PrintMenu();
-	void act(Restaurant &restaurant);
+    PrintMenu(const PrintMenu &printMenu);//copy constructor
+    void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 };
 
@@ -107,18 +130,26 @@ private:
 class PrintTableStatus : public BaseAction {
 public:
 	PrintTableStatus(int id);
+    PrintTableStatus(const PrintTableStatus &printTableStatus);//copy constructor
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
-	const int tableId;
+    const int tableId;
+    std::string open;
+    int bill;
+    std::string customers;
+    std::string dishes;
 };
 
 
 class PrintActionsLog : public BaseAction {
 public:
 	PrintActionsLog();
-	void act(Restaurant &restaurant);
+    PrintActionsLog(const PrintActionsLog &printActionsLog);//copy constructor
+    void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 };
 
@@ -126,8 +157,10 @@ private:
 class BackupRestaurant : public BaseAction {
 public:
 	BackupRestaurant();
+    BackupRestaurant(const BackupRestaurant &backupRestaurant);//copy constructor
 	void act(Restaurant &restaurant);
 	std::string toString() const;
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 private:
 };
 
@@ -135,9 +168,10 @@ private:
 class RestoreResturant : public BaseAction {
 public:
 	RestoreResturant();
-	void act(Restaurant &restaurant);
+    RestoreResturant(const RestoreResturant &restoreResturant);//copy constructor
+    void act(Restaurant &restaurant);
 	std::string toString() const;
-
+    BaseAction* clone(); // create a dynamic copy of the specific child action
 };
 
 

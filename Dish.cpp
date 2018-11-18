@@ -10,12 +10,12 @@ Dish::Dish(const Dish & dish) : id(dish.id), name(dish.name), price(dish.price),
 // move constructor
 Dish::Dish(Dish && dish) : id(dish.id), name(dish.name), price(dish.price), type(dish.type) {}
 
-// copy assignement operator
+// copy assignment operator
 Dish & Dish::operator=(const Dish & dish) {
 	return *this;
 }
 
-// move assignement operator
+// move assignment operator
 Dish & Dish::operator=(Dish && dish) {
 	return *this;
 }
@@ -46,10 +46,4 @@ bool Dish::operator==(const Dish& dish) const
 		(this->getName() == dish.getName()) &&
 		(this->getPrice() == dish.getPrice()) &&
 		(this->getType() == dish.getType()));
-}
-
-bool Dish::operator< (Dish& dish) const
-{
-	cout << "Test this->price= " << this->price << " < " << dish.getPrice() << " =dish.getPrice()" << endl;
-	return (this->price < dish.getPrice());
 }
